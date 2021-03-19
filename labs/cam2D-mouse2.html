@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>cam-mouse2 - Camera mouse mm-6/7/8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1482897214">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+ <script type="text/javascript" src="../js/jquery.js"></script><script type="text/javascript" src="../js/jquery.cookie.js"></script>   <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"enable_toc":true,"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?cam-mouse2">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1482897214" alt="Camera mouse mm-6/7/8" title="Camera mouse mm-6/7/8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="http://www.google.com/">Google</a></li>
+<li><a href="http://www.yahoo.co.jp/">Yahoo!</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">cam-mouse2</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<div class="qhm-align-right" style="text-align:right"><p><a href="cam2D-mouse.html" title="cam-mouse">＜Prev　</a><a href="cam2D-mouse3.html" title="cam-mouse3">Next＞</a></p></div>
+<h2 id="content_1_0">カメラマウス仮想設計2  <a class="anchor" id="bc7c9504" name="bc7c9504"></a></h2>
+<p>シミュレーションによって、フル迷路解析の可能性を確かめた。<br />
+次に実際のハードウェア化について検討する。</p>
+<div class="contents">
+    <nav class="plugin-contents"
+      data-selector="h1,h2,h3,h4"
+      data-target="[&quot;[role=main]&quot;,&quot;#body&quot;,&quot;body&quot;]"
+      data-ignore="no-toc"
+      data-flat="0"
+      data-title=""
+      data-element-title-content="text"
+      data-element-use-title-attr="1"
+      data-element-is-not-descendant-of=".qhm-eyecatch"
+      data-custom-class=""></nav>
+</div>
+
+<h3 id="content_1_1">画像フィッティングの検討  <a class="anchor" id="ga1cca3f" name="ga1cca3f"></a></h3>
+<p>前項で理想状態の迷路画像復元を行ったが、実際のカメラでは視線方向やカメラ位置、画角の精度はそれほど期待できない。特に仰角の誤差に対する復元画像の位置誤差は大きく、想定した設定で仰角0.2°の誤差が迷路1区画の位置誤差になる。<br />
+このため復元画像が迷路区画にフィットするように、射影変換パラメータを調整する必要がある。</p>
+<p>実際のカメラの画像で検討するために、1/3サイズのモデル迷路を作り、デジタルカメラで撮影した。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/modelmaze-45.JPG" alt="モデル迷路写真" title="モデル迷路写真" width="363" height="272"  /></div>
+
+<p>迷路はスチレンボードに紙を貼り、その上に赤いテープを貼ったものである。<br />
+カメラは前ページの画像シミュレーションに合わせ、Φ=75°,θ=45°,α=40°,zc=250mm に近づけるように設定した。<br />
+zcは迷路の縮尺1/3に合わせて 250/3mm に設置した。</p>
+<p>取得した画像サイズは 2272x1704 である。</p>
+<div class="clear"></div>
+<p>図７　モデル迷路撮影画像</p>
+<p>上のカメラ画像を2値化し、射影変換を行って、迷路画像を復元した。実画像では、カメラの回転と、レンズ歪曲歪みの補正が必要になった。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/camera-adjust.png" alt="カメラ補正" title="カメラ補正" width="468" height="171"  /></div>
+
+<div class="clear"></div>
+<p>図８　カメラ補正パラメータ</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/modelmaze-45-invproj.jpg" alt="モデル迷路復元画像" title="モデル迷路復元画像" width="342" height="342"  /></div>
+
+<p>前ページで定義した Φ、θ、α、xc、yc、zc を手作業で微調整した。これらのパラメータに加え、カメラの光軸まわりの回転 ρ、レンズの歪曲歪み d も調整しないと合わせ込めない。微調整した結果は以下である。<br />
+Φ=76.3°、θ=45.7°、α=37°、zc=250mm、xc=13.5mm、yc=11.0mm、ρ=0.7°、d=3%<br />
+歪曲歪み d は水平画像サイズ±１に正規化された画像の像高rに対し、r'=r*(1-d*r) に歪んだ画像が撮影されたものというモデルにした。</p>
+<p>画像がうねっているが、モデル迷路の平面がわずかにうねっているためと思われる。</p>
+<p>これを自動でフィッティングするアルゴリズムを開発する必要がある。</p>
+<div class="clear"></div>
+<p>図９　モデル迷路画像からの復元画像</p>
+
+<h3 id="content_1_2">リフトアップ機構  <a class="anchor" id="kd7975b7" name="kd7975b7"></a></h3>
+<p>迷路上面から250mmカメラをリフトアップする機構を考える。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/liftup-idea.gif" alt="リフトアップ機構案" title="リフトアップ機構案" width="355" height="630"  /></div>
+
+<p>シングルアーム型パンタグラフを参考に、図を書いてみた。<br />
+収納した状態で前後120mm、高さ(床-カメラ中心)75mm。<br />
+伸長した状態で高さ300mm。<br />
+リフトアップの過程でカメラの前後位置、仰角が変化する。<br />
+リンクの強度は？リフトアップの動力は？動力伝達機構は？</p>
+<div class="clear"></div>
+<div class="qhm-align-right" style="text-align:right"><p><a href="cam2D-mouse.html" title="cam-mouse">＜Prev　</a><a href="cam2D-mouse3.html" title="cam-mouse3">Next＞</a></p></div>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+
+
+
+
+
+
+
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">トップ</a></h3>
+
+<h3 id="content_3_2"><a href="gcc2D-porting.html" title="gcc-porting">gcc-porting</a></h3>
+
+<h3 id="content_3_3"><a href="cam2D-mouse.html" title="cam-mouse">カメラマウス仮想設計</a></h3>
+
+<h3 id="content_3_4"><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7 走行制御</a></h3>
+
+<h3 id="content_3_5"><a href="float2D-funcs.html" title="float-funcs">float演算関数</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="blog.html" title="blog">blog</a></h3>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の9件</h5><div><strong>2019-06-15</strong>
+<ul class="recent_list">
+ <li><a href="blog.html" title="blog">blog</a></li>
+</ul>
+<strong>2018-10-20</strong>
+<ul class="recent_list">
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2016-12-28</strong>
+<ul class="recent_list">
+ <li><a href="float2D-funcs.html" title="float-funcs">float-funcs</a></li>
+</ul>
+<strong>2016-09-17</strong>
+<ul class="recent_list">
+ <li><a href="gcc2D-porting.html" title="gcc-porting">gcc-porting</a></li>
+</ul>
+<strong>2014-03-23</strong>
+<ul class="recent_list">
+ <li><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7_runctrl</a></li>
+</ul>
+<strong>2012-11-26</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse.html" title="cam-mouse">cam-mouse</a></li>
+</ul>
+<strong>2012-08-18</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse3.html" title="cam-mouse3">cam-mouse3</a></li>
+</ul>
+<strong>2012-04-15</strong>
+<ul class="recent_list">
+ <li>cam-mouse2</li>
+</ul>
+<strong>2011-09-27</strong>
+<ul class="recent_list">
+ <li><a href="sr2D-cpu.html" title="sr-cpu">sr-cpu</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2018 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

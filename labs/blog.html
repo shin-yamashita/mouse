@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>blog - Camera mouse mm-6/7/8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1615963980">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+   <script type="text/javascript" src="../https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    displayAlign: "inherit",
+    TeX: {
+        Macros: {
+            bm: ["\\boldsymbol{#1}", 1],
+            argmax: ["\\mathop{\\rm arg\\,max}\\limits"],
+            argmin: ["\\mathop{\\rm arg\\,min}\\limits"],
+        },
+        extensions: ["autobold.js", "color.js"],
+        equationNumbers: {
+             //autoNumber: "all"
+        }
+    },
+    tex2jax: {
+        ignoreClass: ".*",
+        processClass: "mathjax-eq"
+    }
+});
+</script>
+ <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?blog">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1615963980" alt="Camera mouse mm-6/7/8" title="Camera mouse mm-6/7/8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="http://www.google.com/">Google</a></li>
+<li><a href="http://www.yahoo.co.jp/">Yahoo!</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">blog</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<p><a href="./" title="FrontPage">FrontPage</a></p>
+<h2 id="content_1_0">blog 2011/.../2019  <a class="anchor" id="qcf1856b" name="qcf1856b"></a></h2>
+
+<h3 id="content_1_1">2019/02/28  <a class="anchor" id="bbae9fcb" name="bbae9fcb"></a></h3>
+<p><a  onClick='location.href="filename3D-refimg/xdu2D-3.02D-p190615.tgz26-key3D-ebd5b82889ab3bb6ac8adbf27a9eff5826-refer3D-blog.html"' style="cursor:pointer;">ダウンロードは、ここをクリック</a>xdu-3.0-p190615.tgz</p>
+
+<h3 id="content_1_2">2016/08/13  <a class="anchor" id="z7a0c8a7" name="z7a0c8a7"></a></h3>
+<p>mm8a に向け、2月から7月にかけてブラシレスモーターを製作した。<br />
+KitMill Qt-100 を入手（定年のお祝い）し，3D-CAD でモーターのパーツを設計、製作。<br />
+3D-CAD は Autodesk Fusion360 、趣味ユーザーは無料で使える。</p>
+<p>log,exp 関数を作成<br />
+<a href="./index.php?plugin=attach&amp;refer=blog&amp;openfile=pow-20160813.tgz" title="2021/03/17 15:53:01 11.7KB"><img src="image/file.png" width="20" height="20" alt="file" style="border-width:0px" />log/exp/pow 関数</a></p>
+
+<h3 id="content_1_3">2015/05/24  <a class="anchor" id="ld86394c" name="ld86394c"></a></h3>
+<p>[OV9640]のピン配置調査完了。</p>
+<p>調査手順：<br />
+1. テスターでピン間の抵抗を測定。ショートしているピン3ピンを発見→GNDと判断<br />
+2. GND に対し、高抵抗を介して２V程度のパルスを加え，各ピンの性質を見る。<br />
+平滑されるピンは電源ピン。（3本発見）<br />
+CMOS I/O はオープンに見える。CMOS I/O の保護ダイオードを介して検波され，VDDIO に電圧が現れるため，VDDIOピンを特定。<br />
+1ピンだけGNDにショートしたりオープンになったりするピンがある。おそらくSCCBのデータ出力？<br />
+3. VDDIO ピンに３Vを供給し，再び各ピンの性質を見る。今度はCMOS出力ピンが低インピーダンスになり、特定。CMOS入力の中で高抵抗でプルダウンされているものが2ピン。RESETとSTANDBYと思われる。<br />
+GND2本にはさまれたCMOS入力ピンをXCLK入力と推定。<br />
+また、残る電源2本のうち1本に2.3Vほど現れた。AVDDと推定。最後に残る電源が1.8Vロジック電源。<br />
+4. mm6基板から 1.8V, 2.5V, 24MHz を供給。SCCBインターフェースも接続。<br />
+各種信号が出始めるので，CMOS出力のピンが特定できた。<br />
+5. SCCB でレジスタアクセス。最初タイミングが合わず、アクセス出来なかったが、調整してアクセスできた。これにより全ピンを特定できた。</p>
+
+<h3 id="content_1_4">2015/05/20  <a class="anchor" id="o02260eb" name="o02260eb"></a></h3>
+<p>aitendo で購入した 「CMOSカメラモジュール（1.3M） [OV9640] 」のピン配置がわからない。HPのデータシート「OV9640FBG」とは異なるモジュールである。<br />
+モジュール内部のチップは OV9640 であると仮定して、ピン配置の調査を開始する。<br />
+mm-6 基板を用いてセンサー電源を供給、SCCB(i2c) コントロールなどを行う。</p>
+<p>gcc-4.6.3 移植で fpu 使用時にバグ。float 比較が cmpsf 命令に変換できず，__ltsf2()などの関数呼び出しになる。<br />
+sr.md に (define_expand &quot;cbranchsf4&quot; ...)と、対応する (define_insn &quot;*cmpsf_internal&quot; ...) を記述する必要があった。</p>
+
+<h3 id="content_1_5">2014/12/14  <a class="anchor" id="h4c0eba7" name="h4c0eba7"></a></h3>
+<p>gcc-3.4.6 から gcc-4.6.3 に、 newlib-1.11.0 から newlib-2.1.0 に更新し，srプロセッサ移植コードを修正した。<br />
+簡単なテストプログラムで動作確認できた。<br />
+complex などが使えるようになる。</p>
+
+<h3 id="content_1_6">2014/11/23  <a class="anchor" id="f371f6fe" name="f371f6fe"></a></h3>
+<p>第35回マイクロマウス競技会に参加。<br />
+予選では 17秒693 25位、特別枠として決勝に。<br />
+決勝では 29秒302 21位 でした。</p>
+<p>予選，決勝とも1、２回目のトライアルでは最短経路を求められず，3回目でようやく最短経路を走りました。<br />
+mm-7aは1回のトライアルにつき6枚の画像を撮影します。画像はそれぞれ1312x972x8bit の赤の色差画像です。これをSDカードに記録するには20秒近くかかってしまうため、失敗時の画像は保存していませんでした。<br />
+最短経路を求められた3回目の画像は保存してあり，画像処理の過程を再現することができるのですが，100%壁の検出が成功した結果が残っているのみで、1，2回目の失敗の原因は不明のままです。<br />
+画像処理アルゴリズムはこれまで3度の競技会に参加して得た、様々な照明条件での迷路画像を用いて改善し，認識確度を上げてきました。3月に参加したAPEC大会では本番前の調整走行を含めてほぼ100%の認識が出来ていたのですが...<br />
+不調の原因として考えられるのは，カメラをリフトアップしたときの撮影角度の精度が画像処理の許容範囲を越えてずれた可能性があります。メカのガタがだいぶ増えている可能性があります。仰角の1〜2°のずれが致命的です。</p>
+
+<h3 id="content_1_7">2014/03/17  <a class="anchor" id="c44c181e" name="c44c181e"></a></h3>
+<p>APEC 28th Annual Micromouse Contest<br />
+2014年3月17日 Fort Worth, Texas USA<br />
+<a href="http://mouse.la.coocan.jp/index.php?APEC2014-report">http://mouse.la.coocan.jp/index.php?APEC2014-report</a></p>
+
+<h3 id="content_1_8">2014/01/29  <a class="anchor" id="n3de5c0f" name="n3de5c0f"></a></h3>
+<p>mm-7a は第34回全日本マイクロマウス大会で、完走は果たした。<br />
+しかし、走行速度は予選通過レベルに至らず。<br />
+決勝迷路でのエキジビション走行タイムは優勝マウスの1/4以下であった。<br />
+カメラによる全迷路解析は何とか実現できたが、タイムトライアル競技で予選も通過できないのは悔しい。</p>
+<p>走行速度が上がらないのは主に重心が高く、かつ車軸より前方にあるためである。<br />
+直線走行での加減速では、加速度 -2500 mm/s^2 を越えると減速時にタイアのスリップが起こり始める。加速時はもう少し余裕がある。加速、減速で差が大きいのは重心の高さによる。<br />
+回転半径90mmのスラローム回転時は、速度300mm/s を越えるとタイアのスリップが起こり始める。重心が高いことに加え、車軸より前方にあるためスリップ限界がかなり低い。</p>
+<p>次の課題として、カメラを用いるコンセプトを維持しつつ、速度を追求してみようか。<br />
+完全4輪駆動はどうか。<br />
+in-wheel motor で4輪独立駆動。ステアリングは受動的に出来るか?<br />
+（前(後)輪2輪を平行リンクで繋ぎ、左右の車輪を独立に速度制御することでステアリングを受動的に切ることが出来るか?）<br />
+HXM1400-2000 の様なoutrunner brushless はどうか?磁極の位置センサを設けて駆動する必要あり。低速域が問題。<br />
+前輪、後輪の制御で安定に走行性御できるか？制御要素が多く、制御目標に対して直交していない？</p>
+
+<h3 id="content_1_9">2013/10/26  <a class="anchor" id="o97b9232" name="o97b9232"></a></h3>
+<p>追加した加速度センサはノイズ、ドリフトが想像以上に大きい。同じメーカーのジャイロ(LY3100)は非常に安定なため、ジャイロを全面的に信頼した走行制御に切り替えたのだが。加速度センサはタイアのエンコーダによる速度検出の低速域を補間する目的で追加したが、心許ない。</p>
+<p>新たな走行制御は形になってきた。ただ、機体の重量が大きく（157g)また重心が高い（35mm）ため、加速度が出せない。直進でせいぜい 3m/s/s。自宅の小さな迷路は直線で最大5区画なので大きな速度のテストが出来ない。</p>
+
+<h3 id="content_1_10">2013/09/15  <a class="anchor" id="xc43fc4a" name="xc43fc4a"></a></h3>
+<p>９月 走行制御の改良に着手。<br />
+左右タイヤの回転数平均（走行距離）を、同相で、ジャイロで検出した角度を差動で駆動輪に与える。走行距離目標と角度目標との誤差をそれぞれ同相、差動で加え、それぞれPIDループフィルタを介して左右駆動輪を制御する。</p>
+<p>８月 迷路の画像から壁を判別するアルゴリズムを改善。昨年の予選迷路画像では全迷路を正しく検出出来る。もっと画像が欲しいが...</p>
+<p>７月 加速度センサ、FFCコネクタ変換、I2CでSW、LEDを増設<br />
+　　'ハッピーPCB'で基板作成</p>
+
+<h3 id="content_1_11">2013/03/30  <a class="anchor" id="pec80179" name="pec80179"></a></h3>
+<p>mimeTeX を導入<br />
+<a href="http://www.forkosh.com/source_mimetexmanual.html">http://www.forkosh.com/source_mimetexmanual.html</a><br />
+数式を TeX 流に記述し、cgi で画像に変換、挿入する。</p>
+<ul class="list2" ><li>例：<br />
+　&lt;img src=&quot;../cgi-bin/mimetex.cgi?x=\frac{-b\pm\sqrt{b^2-4a} }{2a}&quot;&gt;
+<div style="margin: 10px; margin-left: 50px"> <img src="../cgi-bin/mimetex.cgi?x=\frac{-b\pm\sqrt{b^2-4a} }{2a}"></div></li>
+<li>インストール：<br />
+<a href="http://www.forkosh.com/mimetex.html">http://www.forkosh.com/mimetex.html</a> 　からサーバーのOSに合わせたバイナリ：<br />
+Precompiled Binaries / Linux(i386) mimetex.zip をダウンロード、解凍し、HP の cgi-bin/ 以下に mimetex.cgi をコピー<br />
+以上で OK。</li></ul>
+<p>2014/12/追記：上記テストをしたときは表示出来ていたと思うが，現在 nifty のホームページサービスでは cgi が php,perl,ruby のみに制限され、使えない。</p>
+<p>新たに MathJax <a href="http://ja.wikipedia.org/wiki/MathJax">http://ja.wikipedia.org/wiki/MathJax</a> を用いるプラグインを導入。<br />
+MathJax plugin: <a href="http://abicky.net/pukiwiki/plugins/index.php?mathjax.inc.php#q53234f0">http://abicky.net/pukiwiki/plugins/index.php?mathjax.inc.php#q53234f0</a></p>
+<p>例：</p>
+<pre>#mathjax(x=\frac{-b\pm\sqrt{b^2-4a} }{2a})</pre>
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\[ x=\frac{-b\pm\sqrt{b^2-4a} }{2a} \]</div></div>
+<pre>インライン記述：　$x=\frac{-b\pm\sqrt{b^2-4a} }{2a}$</pre>
+<p>インライン記述：　<span class='notranslate'><span class='mathjax-eq ' style=''>\( x=\frac{-b\pm\sqrt{b^2-4a} }{2a} \)</span></span></p>
+<pre>ブロック記述：
+\begin{eqnarray}
+  f(\bm x) &amp;=&amp; (x_1 + x_2)^2 \\
+           &amp;=&amp; x_1^2 + 2 x_1 x_2 + x_2^2
+\end{eqnarray}</pre>
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\begin{eqnarray}   f(\bm x) &=& (x_1 + x_2)^2 \\            &=& x_1^2 + 2 x_1 x_2 + x_2^2 \end{eqnarray}</div></div>
+
+<h3 id="content_1_12">2013/03/26  <a class="anchor" id="y709c048" name="y709c048"></a></h3>
+<p>迷路最短経路計算ソフト手直し<br />
+走行時間を比較して最短を求める。斜めの長い経路が選ばれる。<br />
+迷路のパターンによっては探索の木が広がり、多くのメモリを必要とする。</p>
+<p>斜めを積極的に選ぶようにしたが、斜め走行の経験が少ないので安定走行の自信がない。<br />
+小さな迷路でどうやって詰めていくか?</p>
+
+<h3 id="content_1_13">2012/12/29  <a class="anchor" id="rd68a7d0" name="rd68a7d0"></a></h3>
+<p>Xilinx ise 用ダウンロードケーブル　Digilent JTAG HS-1<br />
+ドライバインストール手順  (Fedora-15) 覚書<br />
+<a href="http://lighttomorrow.wordpress.com/2011/12/18/how-to-install-digilent-cable-driver-for-xilinx-design-suite-on-ubuntu-11-10/">http://lighttomorrow.wordpress.com/2011/12/18/how-to-install-digilent-cable-driver-for-xilinx-design-suite-on-ubuntu-11-10/</a></p>
+<p>1. libusb  libusb1-1.0.8-7.fc15.i686<br />
+2. Digilent Adept Runtime<br />
+digilent.adept.runtime_2.9.9-i686.tar.gz<br />
+3. Digilent Adept Utilities<br />
+digilent.adept.utilities_2.1.1-i686.tar.gz<br />
+4. Digilent Plugin for Xilinx Design Suites<br />
+libCseDigilent_2.4.3-i686.tar.gz</p>
+<p>libCseDigilentをインストールすることで、root 権限なしにダウンロードできるようになる。</p>
+
+<h3 id="content_1_14">2012/12/20  <a class="anchor" id="y466a5ef" name="y466a5ef"></a></h3>
+<p>迷路画像解析ルーチン見直し（高速化）<br />
+matrix 演算、ループの内側を最小化。歪み補正前にクリップ判定</p>
+<p>迷路解析時間 10s -&gt; 6s に短縮</p>
+
+<h3 id="content_1_15">2012/12/19  <a class="anchor" id="bd03e938" name="bd03e938"></a></h3>
+<p>mm7t main FPGAの回路見直し。</p>
+<ol class="list1" ><li>sr_cache i-cache と d-cache のアクセス混在時の誤動作<br />
+DRAM 上のプログラムを実行してDRAMのデータを参照で誤動作していた。<br />
+bus ready の条件抜けを解消してOK</li>
+<li>CPUクロック高速化検討　30M-&gt;42Mはmet 48Mはtiming met難<br />
+クロック高速化でcache誤動作-&gt;migの転送終了条件抜け。転送終了直前のFIFOホールドで誤動作。<br />
+dirtyセット条件記述ミス</li></ol>
+<p>42M化で迷路解析時間 17s -&gt; 10s に短縮</p>
+
+<h3 id="content_1_16">2012/11/24  <a class="anchor" id="k0ec236d" name="k0ec236d"></a></h3>
+<p>33回大会予選　結果はリタイア</p>
+<p>1回め、迷路撮影、解析後走行 5,0区画の北壁に衝突。おそらく5,0区画付近の壁が数ヶ所抜けて、そこを最短と判断したらしい。<br />
+3回め、迷路撮影、解析後走行 1,4区画の東壁に衝突。<br />
+5回め、11,10区画北壁に衝突。この回は、画像とログが残った。<br />
+迷路東からの外光が迷路上面に斜めに反射し、白く光っており、1回めに抜けたのはおそらくこの原因。偏光フィルタが有効と思われる。</p>
+<p>3回めの抜けは不明。h0l画像の角度誤差か?　画像ログが欲しい。<br />
+5回目の抜けは縦壁と横壁のコントラストが大きい区画で明るい壁にスレッショルドが引っ張られて暗い壁が抜けていた。アルゴルで改善可能なはず。</p>
+<p>他に、走行用フォトセンサが斜め上からの光で飽和気味で、走行が少し不安定。フォトセンサの感度を下げ、Dレンジを確保し、遮光をしっかりする。</p>
+
+<h3 id="content_1_17">2012/11/23  <a class="anchor" id="gadd9100" name="gadd9100"></a></h3>
+<p>mm-7 何とか完成。 2011年　33回大会に参加<br />
+試走会で初めてフルサイズ迷路を撮影した。これまで1/3サイズの縮小迷路を撮影した画像のみで迷路解析ソフトをチューニングしてきたが、実迷路の壁、床の白黒が除去出来るか?<br />
+実迷路撮影後、カメラパラメータ(主にΦの中心値を設定)を設定。<br />
+迷路解析させたところ、遠方の横壁2ヶ所ほど抜ける。→壁判定スレッショルド決定アルゴルを調整し、試走迷路で100%解析できるようになった。<br />
+ただ、撮影した画像を見ると周辺部のボケが激しい。中心部のフォーカスはあっているので球面収差が大きいようだ。周辺と中央のバランスを取ってフォーカス調整した方がよいのだが、余裕が無い。</p>
+<p>今年から、ゴール四方の壁の色が黄色になるとのこと。(10/17改訂？)今回は特別に申し出れば赤に変えてくださるとのこと。次回は黄色も判別する必要がある。(B-Y画像で可能か?)</p>
+
+<h3 id="content_1_18">2012/１〜11  <a class="anchor" id="y9d05401" name="y9d05401"></a></h3>
+<p>2012/1月から仮想設計を初め、6月回路設計完、6/20 P板.com から基板納入。<br />
+今回は、0.8ピッチのDDR3の実装と、BGA3個同時実装が心配。費用の点から部品の予備はほとんど無い。<br />
+まずは電源チェック、FPGAのコンフィグ確認、基板は1発完動！<br />
+カメラ基板から回路組み込み、チェック。MT9P401はすんなり動作。ただ、96MHz動作をすると発熱が大きい。電源ドロップが心配。<br />
+メイン基板、DDR3の動作チェック。xilinx mig の exsample design を組み込んでチェック。難なくOK。<br />
+後はmm-6で作ったsr-cpu,mmc,pwm,encoder,...各種回路を流用組込み。<br />
+spartan-6でcpuのクロックアップを狙ったが、タイミングmetし辛く断念。<br />
+7月、友人が迷路解析のアルゴリズム検討を申し出てくれたので、ハードの開発に専念。<br />
+10月、友人のアルゴリズムの説明を受ける。友人は何とLabViewのグラフィック言語で検討しており、そのままmm-7のCには持ってこれない。また、実行速度の観点での見直しが必要。解析の手順、考え方をいただいて、Cに組み込む。</p>
+
+<h3 id="content_1_19">2012/01/03  <a class="anchor" id="y09777e6" name="y09777e6"></a></h3>
+<p>2011年 32回大会はリタイア。<br />
+ラインレーザーの光量に対し、会場の照明に照らされた迷路壁上面の赤色が大きなレベルで、位置検出が誤動作。<br />
+ラインレーザー案を考えた時点で壁の赤色は懸念だったはずだが、照明光に対する検証を怠ったための失敗。<br />
+根本的な方向性が間違っていた。</p>
+<p>LONG号の小峰さんが過去に　CCDカメラで8x8くらいの範囲を見渡すマウスを作られた。現在のCMOSカメラなど入手可能な部品の進化を考えると、迷路全体を一度に見渡してしまうことが可能になっている。<br />
+少し仮想設計をしてみよう。&lt;<a href="cam2D-mouse.html" title="cam-mouse">カメラマウス仮想設計</a>&gt;</p>
+
+<h3 id="content_1_20">2011/06/12  <a class="anchor" id="h819904c" name="h819904c"></a></h3>
+<p>mm6_cache の構成変更。BRAM使用率削減し、 sr_sub DRAMリードキャッシュ sns_cache を追加。</p>
+<p>sr_sub のsns_cache デバッグ中 pcの初期化、リセットベクタのフェッチ不具合発見、修正。これまで i/d メモリ共通だったので気づかず。</p>
+<p>sns_cd のセンサーデータ処理に、R-Y 処理を追加。</p>
+
+<h3 id="content_1_21">2011/05/22  <a class="anchor" id="g35054b6" name="g35054b6"></a></h3>
+<p>libgcc のfp代替を作成 __addsf3,__mulsf3, ... fplib.c<br />
+/home/shin/opencore/cvs/xgcc-sr/fplib</p>
+
+<h3 id="content_1_22">2011/05/05  <a class="anchor" id="m3a39b65" name="m3a39b65"></a></h3>
+<p>sns_cd.vhd 画像信号のSDRAM書き込み時、画面右端のVアドレスがずれる件、<br />
+snsfifo のempty flagのタイミング（アドレス）が64のため、Hの最後のデータがFIFOから出ない。→ empty = 62/63にして　OK。</p>
+
+<h3 id="content_1_23">2011/04/24  <a class="anchor" id="t1bb4f81" name="t1bb4f81"></a></h3>
+<p>fcmp 命令追加。OK<br />
+gcc binutils  fcmp　追加OK</p>
+
+<h3 id="content_1_24">2011/04/20  <a class="anchor" id="v130b8c6" name="v130b8c6"></a></h3>
+<p>print_dbl() 関数でシミュレーション。 app/sr_test/fptest srsim とisim 突合せ。<br />
+sr_fpu.vhd float 命令の０処理 bugfix<br />
+gauss-fp を実行。OK</p>
+<p>オプション -mfpu でコンパイルした結果に _ltsf2 などfloat比較関数が呼ばれる。fcmp命令追加?</p>
+
+<h3 id="content_1_25">2011/04/19  <a class="anchor" id="a3b4b6a6" name="a3b4b6a6"></a></h3>
+<p>fpu 実装、デバッグ、合成<br />
+fputest.c sim reference<br />
+sns_vid をダミーにして合成。xst area で合成。</p>
+<p>gauss-fp を実行。動作し始め。演算一部異常。<br />
+print_dbl() 関数がテストベンチになるか？</p>
+
+<h3 id="content_1_26">2011/04/10  <a class="anchor" id="qaacfd4d" name="qaacfd4d"></a></h3>
+<p>/home/shin/opencore/cvs/sr-core/hdl/sr_fpu.vhd<br />
+pkg_optab-fp.vhd</p>
+
+<h3 id="content_1_27">2011/04/07  <a class="anchor" id="s42abe87" name="s42abe87"></a></h3>
+<p>gcc multilib compile</p>
+<p>gcc-3.4.6/gcc/config/sr/t-sr<br />
+MULTILIB_OPTIONS = mfpu/mfpu-ex<br />
+configure --enable-multilib</p>
+
+<h3 id="content_1_28">2011/04/06  <a class="anchor" id="y765df56" name="y765df56"></a></h3>
+<p>opencore/cvs/xgcc-sr/srsim debug OK --&gt; commit</p>
+<p>opencore/cvs/sr-core/hdl/sr_fpu.vhd  edit start</p>
+
+<h3 id="content_1_29">2011/04/02  <a class="anchor" id="nf1058f3" name="nf1058f3"></a></h3>
+<p>sr processor fpu の検討<br />
+xgcc2/srsim<br />
+opcodes-fpu.ods --&gt; optabgen.pl --&gt; optab.h<br />
+simcore.c<br />
+ophdlgen.c --&gt; pkg_optab-fp.vhd</p>
+<p>xgcc2/cgen-latest/cgen/cpu/sr.cpu<br />
+xgcc2/gcc-3.4.6/gcc/config/sr/sr.*<br />
+xgcc2/gdb-6.7.1/sim/sr.c</p>
+<ul class="list1" ><li>gcc のオプション　-mfpu で　fpu 命令イネーブル -mfpu-ex で sqrt,divsf 追加</li>
+<li>binutils は fpu enabled</li></ul>
+<p>multilib ?</p>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+
+
+
+
+
+
+
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">トップ</a></h3>
+
+<h3 id="content_3_2"><a href="gcc2D-porting.html" title="gcc-porting">gcc-porting</a></h3>
+
+<h3 id="content_3_3"><a href="cam2D-mouse.html" title="cam-mouse">カメラマウス仮想設計</a></h3>
+
+<h3 id="content_3_4"><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7 走行制御</a></h3>
+
+<h3 id="content_3_5"><a href="float2D-funcs.html" title="float-funcs">float演算関数</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+
+<h3 id="content_3_6" class="focus"><a href="./" title="blog">blog</a></h3>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の9件</h5><div><strong>2019-06-15</strong>
+<ul class="recent_list">
+ <li>blog</li>
+</ul>
+<strong>2018-10-20</strong>
+<ul class="recent_list">
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2016-12-28</strong>
+<ul class="recent_list">
+ <li><a href="float2D-funcs.html" title="float-funcs">float-funcs</a></li>
+</ul>
+<strong>2016-09-17</strong>
+<ul class="recent_list">
+ <li><a href="gcc2D-porting.html" title="gcc-porting">gcc-porting</a></li>
+</ul>
+<strong>2014-03-23</strong>
+<ul class="recent_list">
+ <li><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7_runctrl</a></li>
+</ul>
+<strong>2012-11-26</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse.html" title="cam-mouse">cam-mouse</a></li>
+</ul>
+<strong>2012-08-18</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse3.html" title="cam-mouse3">cam-mouse3</a></li>
+</ul>
+<strong>2012-04-15</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse2.html" title="cam-mouse2">cam-mouse2</a></li>
+</ul>
+<strong>2011-09-27</strong>
+<ul class="recent_list">
+ <li><a href="sr2D-cpu.html" title="sr-cpu">sr-cpu</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2021 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

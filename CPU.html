@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>CPU - Camera mouse mm-6 / 7 / 8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1482806308">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+    <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?CPU">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1482806308" alt="Camera mouse mm-6 / 7 / 8" title="Camera mouse mm-6 / 7 / 8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="About_Me.html" title="About_Me">プロファイル</a></li>
+<li><a href="Links.html" title="Links">Links</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">CPU</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<div class="qhm-align-right" style="text-align:right"><p><a href="FPGA.html" title="FPGA">＜Prev</a>  <a href="E3-82-A4-E3-83-A1-E3-83-BC-E3-82-B8-E3-82-BB-E3-83-B3-E3-82-B5-.html" title="イメージセンサ">Next＞</a></p></div>
+<h2 id="content_1_0">mm-6/<!--autolink--><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a><!--/autolink-->  <a class="anchor" id="m6b311f0" name="m6b311f0"></a></h2>
+
+<h3 id="content_1_1">CPU  <a class="anchor" id="n07b5f97" name="n07b5f97"></a></h3>
+<p>mm-6 のCPUはオリジナル設計の32bit RISC プロセッサです。SRプロセッサ と名付けました。</p>
+
+<h4 id="content_1_2">開発の経緯  <a class="anchor" id="j80cd2f0" name="j80cd2f0"></a></h4>
+<p>FPGAでマウスを作って見ようと思い立った時点で、FPGAに組み込むプロセッサを探してみました。安価なFPGA(Xilinx社 Spartan シリーズ／Altera社 Cyclone シリーズ等)に入るCPUコアは各社提供していますが有償です。(2012/8 追記：最近は Xilinx microblaze、Altera NIOS は無償になっています）<br />
+www.opencores.org にはフリーのプロセッサがいくつも登録されており、その中から SH-2 互換の Aquarius<a id="notetext_1" href="#notefoot_1" class="note_super" title="Aquarius : Openc...">*1</a>を選んで試してみました。以下の様な手順です。</p>
+<ul class="list1" ><li>gcc のソースを入手し、ターゲットCPUを sh2 としてクロスコンパイラをビルド</li>
+<li>Aquariusのソースを入手<a id="notetext_2" href="#notefoot_2" class="note_super" title="Aquariusのソ�...">*2</a>して Xilinx社の無償版開発ツール ise Web-pack で論理合成、デバッグ用ターミナルやI/Oポートをテスト環境に合わせて多少手直し</li>
+<li>テストプログラムをクロスコンパイルし、FPGAに組み込み</li>
+<li>FPGA xc3s400 のブレッドボード<a id="notetext_3" href="#notefoot_3" class="note_super" title="XC3S400ブレッ...">*3</a>に書き込んでテスト</li></ul>
+<p>以上のテストで Aquarius は Spartan-3 XC3S400 にぎりぎり収まり、CPUのクロックは約30MHzまで動作可能なことがわかりました。多少の周辺回路を入れることはできそうですが、余裕はありません。<br />
+この作業をする中で、「TSU-GCC製作記」<a id="notetext_4" href="#notefoot_4" class="note_super" title="TSU-GCC製作記...">*4</a>というページを知り、gcc 移植の可能性を知りました。sh2 クロスコンパイラのビルドを経験していたこともあり、何とか出来そうな気がして gcc を移植可能なオリジナルCPUを設計してみようと考えました。</p>
+
+<h4 id="content_1_3">設計方針  <a class="anchor" id="d280f003" name="d280f003"></a></h4>
+<p>とはいえ、1からまったく新しいCPUのポーティングは私にはムリそうなので、既存のCPUを元に改造していく形でオリジナルの命令セットを作ることにしました。元にするCPUは富士通のfr30にしました。（移植コードが小さく、またアセンブラ、リンカなどの移植を容易にするツール cgen<a id="notetext_5" href="#notefoot_5" class="note_super" title="cgen : the Cpu t...">*5</a> を使っているなどの理由による）<br />
+fr30を参考にし、以下のような方針でCPUの命令セットを作りました。</p>
+<ul class="list1" ><li>gcc の移植に必要な最低限の命令セットとする</li>
+<li>gcc でよく使われるスタックへのアクセス(load/store 命令のアドレッシング)は充実する</li>
+<li>ハード実装しにくい又はgcc移植しにくい命令は実装しない</li>
+<li>命令は16bitを基本にする。オペランドは2つ</li>
+<li>汎用レジスタは32bit x16本とし、うち1本をスタックポインタとする</li>
+<li>他のレジスタは、リターンポインタとステータスレジスタのみ　特殊レジスタを使わない</li></ul>
+<p>同時に、新たに作った命令セットを実行する回路を設計します。<br />
+CPUを設計するに当たっては、書籍「コンピュータ・アーキテクチャ― 設計・実現・評価の定量的アプローチ」(ヘネシー＆パターソン著)を参考にしました。コンピュータの設計に興味がある方には必携です。<br />
+この本にしたがって、ベーシックな RISC タイプの5段パイプライン構成で設計することにしました。<br />
+コンパイラが使えないと実用的なプロセッサにはならないので、gcc の移植とCPUの<!--autolink--><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a><!--/autolink-->設計を同時に進め、完成を目指すことにしました。</p>
+
+<h4 id="content_1_4">CPU開発の流れ  <a class="anchor" id="b4c50a98" name="b4c50a98"></a></h4>
+<p>以下、gcc移植とCPU開発の流れです。</p>
+<ol class="list1" ><li>ターゲットfr30で gnuのbinutils(アセンブラ、リンカ等)、gcc、gdb を一からビルドする練習。binutilsとgdbはcgenを使ってcpu記述ファイルからビルドするツールチェーンを確認する</li>
+<li>新命令セットでクロスアセンブラ、リンカ、gccを作る
+<ol class="list2" ><li>fr30 の命令を参考に、命令セットを作る</li>
+<li>cgen のcpu記述に新たに定義した命令セットを記述→binutilsをビルド／インストール</li>
+<li>gcc のcpu記述を新命令を使って記述し、ビルド／インストール</li>
+<li>cgen を用いて gdbをビルド／インストール</li>
+<li>クロスgccでテストプログラムをコンパイルし、クロスgdbでシミュレーション実行 → binutils,gcc のcpu記述のデバッグ</li></ol></li>
+<li>CPUのハード構成を設計し、パイプラインまで正確にエミュレートしたモデルをＣ言語で作成→テストプログラムを実行<br />
+Ｃモデルとクロスgdbをつき合わせてＣモデルをデバッグ<br />
+この時点でハード実装容易さの観点で命令セットの修正を行った→2. へ戻る</li>
+<li>ＣモデルをリファレンスとしてHDLを記述、Ｃモデルの実行トレースとHDLのシミュレーションをつき合わせてHDLをデバッグ<br />
+Ｃモデル用に作成した命令のテーブルを使用してHDLの命令テーブルを自動生成することでミスを防ぐ<br />
+HDLのシミュレーションにはiseのシミュレータisimを用いた<br />
+デバッグにはHDLの中で実行トレースのテキスト出力をするのが有効</li>
+<li>xilinx ise でHDLから回路合成、FPGAにプログラム、テストプログラムを実行してデバッグ<br />
+ゲートレベルシミュレーションで合成の不具合追跡</li></ol>
+<p>実際の移植作業では、gccよりもbinutils/gdbの方があちこちのソースに手を入れる必要があり、大変でした。fr30はメンテナンスがされていないようで、いくつかバグがありましたが、そのバグを追跡する過程で新命令セットの開発デバッグ手順を作って行くことが出来ました。</p>
+
+<h4 id="content_1_5">SRプロセッサの概要  <a class="anchor" id="f576f715" name="f576f715"></a></h4>
+<p>SRプロセッサのハード構成概要です。</p>
+<ul class="list1" ><li>命令バスとデータバスが独立したハーバードアーキテクチャ<br />
+メインメモリ(FPGA内のSRAM32kB)をデュアルポートにして命令とデータを同時にアクセス</li>
+<li>パイプラインは Fetch/Decode/Exec/MemoryAccess/WriteBack の5段</li>
+<li>レジスタ競合時などのストールはハードウエアで行う(gccで対策する方法がわからない)<br />
+フォワーディングを積極的に行ってできるだけストールが起こらないようにした<br />
+（ただし、このために論理段数が増え、クリチカルパスが長くなってクロック周波数が制限される。ストールを許してクロックを上げることが出来ればその方が良いかもしれない）</li>
+<li>ブランチ、ジャンプなどはディレイスロット付き命令を用意</li>
+<li>32bitの乗算(1クロック)と除算(18クロック)はハードで実装</li>
+<li>ハード割り込みは1系統のみ実装</li>
+<li>Ｉ／Ｏはデータバス上に直接接続</li></ul>
+<p>開発したCPUを、XC3S400 FPGA に実装したところ、Aquariusと同程度のハード規模と実行速度(30MHz)が得られました。</p>
+<p>プログラミングモデル概要</p>
+<img src="refimg/sr-progmodel.png" alt="SR programing model" title="SR programing model" width="546" height="185" />
+<p>命令セット概要</p>
+<img src="refimg/sr-insnset.gif" alt="SR insn set" title="SR insn set" width="628" height="255" />
+<p>トータル108命令（アドレシングモードの組み合わせには制限がある）</p>
+<p>命令タイプ</p>
+<img src="refimg/sr-insntype.gif" alt="SR insn type" title="SR insn type" width="599" height="259" />
+<p>1ハーフワード命令を基本にしているが、2/3ハーフワード命令を追加<br />
+<br /></p>
+<hr class="full_hr" />
+<div class="qhm-align-right" style="text-align:right"><p><a href="FPGA.html" title="FPGA">＜Prev</a>  <a href="E3-82-A4-E3-83-A1-E3-83-BC-E3-82-B8-E3-82-BB-E3-83-B3-E3-82-B5-.html" title="イメージセンサ">Next＞</a></p></div>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+<div id="summary"><!-- ■BEGIN id:summary -->
+ <!-- ■BEGIN id:note -->
+ <div id="note">
+   <hr class="note_hr" /><a id="notefoot_1" href="#notetext_1" class="note_super">*1</a>
+<span class="small">Aquarius : Opencores プロジェクトのSH互換プロセッサ Verilog記述 FPGAで検証済み→<a href="http://opencores.org/project,aquarius">link</a></span><br />
+<a id="notefoot_2" href="#notetext_2" class="note_super">*2</a>
+<span class="small">Aquariusのソースおよびテストプログラム : 菅原システムズさんのサイトからダウンロードさせていただきました→<a href="http://japanese.sugawara-systems.com/opencores/benchmark/benchmark_sh2.htm">link</a></span><br />
+<a id="notefoot_3" href="#notetext_3" class="note_super">*3</a>
+<span class="small">XC3S400ブレッドボード : HUMANDATA社　XCM-800 を利用しました→<a href="http://www.hdl.co.jp/XCM-008/index.html">link</a></span><br />
+<a id="notefoot_4" href="#notetext_4" class="note_super">*4</a>
+<span class="small">TSU-GCC製作記 : 学生さんが実習で設計したプロセッサ用にgccを移植した記録→<a href="http://web.yl.is.s.u-tokyo.ac.jp/~sumii/tsugcc/tsugcc.html#toc9">link</a></span><br />
+<a id="notefoot_5" href="#notetext_5" class="note_super">*5</a>
+<span class="small">cgen : the Cpu tools GENerator アセンブラ、リンカ、シミュレータの移植を容易にする→<a href="http://sourceware.org/cgen/">link</a></span><br />
+ </div>
+ <!-- □END id:note -->
+
+
+
+
+</div><!-- □ END id:summary -->
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">はじめに</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_2"><a href="mm2D-82D-outline.html" title="mm-8-outline">mm-8a 概要</a></h3>
+
+<h4 id="content_3_3"><a href="mm82D-motor.html" title="mm8-motor">モーターを作る</a></h4>
+
+<h4 id="content_3_4"><a href="mm82D-imgproc.html" title="mm8-imgproc">2016迷路画像</a></h4>
+
+<h4 id="content_3_5"><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">2017迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="mm2D-7a.html" title="mm-7a">mm-7a 概要</a></h3>
+
+<h4 id="content_3_7"><a href="mm7a2D-imgproc.html" title="mm7a-imgproc">2013決勝迷路画像</a></h4>
+
+<h4 id="content_3_8"><a href="mm7a2D-imgproc2.html" title="mm7a-imgproc2">2014迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_9"><a href="mm2D-7.html" title="mm-7">mm-7 概要</a></h3>
+
+<h3 id="content_3_10"><a href="mm72D-system.html" title="mm7-system">ハードウェア</a></h3>
+
+<h4 id="content_3_11"><a href="mm72D-system.html" title="mm7-system">システム構成</a></h4>
+
+<h4 id="content_3_12"><a href="mm72D-pwb.html" title="mm7-pwb">プリント基板</a></h4>
+
+<h3 id="content_3_13"><a href="mm72D-imgproc.html" title="mm7-imgproc">迷路画像解析</a></h3>
+
+<h4 id="content_3_14"><a href="mm72D-imgproc2.html" title="mm7-imgproc2">2012予選迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_15"><a href="E6-A6-82-E8-A6-81-.html" title="概要">mm-6 概要</a></h3>
+
+<h3 id="content_3_16"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a></h3>
+
+<h4 id="content_3_17"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">システム構成</a></h4>
+
+<h4 id="content_3_18"><a href="FPGA.html" title="FPGA">FPGA</a></h4>
+
+<h4 id="content_3_19" class="focus"><a href="./" title="CPU">CPU</a></h4>
+
+<h4 id="content_3_20"><a href="E3-82-A4-E3-83-A1-E3-83-BC-E3-82-B8-E3-82-BB-E3-83-B3-E3-82-B5-.html" title="イメージセンサ">イメージセンサ</a></h4>
+
+<h4 id="content_3_21"><a href="E3-83-97-E3-83-AA-E3-83-B3-E3-83-88-E5-9F-BA-E6-9D-BF-.html" title="プリント基板">プリント基板</a></h4>
+
+<h4 id="content_3_22"><a href="E5-AE-9F-E8-A3-85-.html" title="実装">実装</a></h4>
+
+<h3 id="content_3_23"><a href="E3-82-BD-E3-83-95-E3-83-88-E3-82-A6-E3-82-A8-E3-82-A2-.html" title="ソフトウエア">ソフトウエア</a></h3>
+
+<h3 id="content_3_24"><a href="E9-96-8B-E7-99-BA-E7-92-B0-E5-A2-83-.html" title="開発環境">開発環境</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_25"><a href="mm2D-6A2D-outline.html" title="mm-6A-outline">mm-6A</a></h3>
+<hr class="full_hr" />
+
+<h2 id="content_3_26">その他</h2>
+
+<h3 id="content_3_27"><a href="APEC20142D-report.html" title="APEC2014-report">APEC2014-report</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の5件</h5><div><strong>2018-03-11</strong>
+<ul class="recent_list">
+ <li><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">mm8b-imgproc</a></li>
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2017-12-03</strong>
+<ul class="recent_list">
+ <li><a href="About_Me.html" title="About_Me">About_Me</a></li>
+</ul>
+<strong>2017-06-28</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-imgproc.html" title="mm8-imgproc">mm8-imgproc</a></li>
+</ul>
+<strong>2017-01-15</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-motor.html" title="mm8-motor">mm8-motor</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2021 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

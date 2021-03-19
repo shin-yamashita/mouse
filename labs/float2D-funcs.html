@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>float-funcs - Camera mouse mm-6/7/8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1615963980">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    displayAlign: "inherit",
+    TeX: {
+        Macros: {
+            bm: ["\\boldsymbol{#1}", 1],
+            argmax: ["\\mathop{\\rm arg\\,max}\\limits"],
+            argmin: ["\\mathop{\\rm arg\\,min}\\limits"],
+        },
+        extensions: ["autobold.js", "color.js"],
+        equationNumbers: {
+             //autoNumber: "all"
+        }
+    },
+    tex2jax: {
+        ignoreClass: ".*",
+        processClass: "mathjax-eq"
+    }
+});
+</script>
+ <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?float-funcs">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1615963980" alt="Camera mouse mm-6/7/8" title="Camera mouse mm-6/7/8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="http://www.google.com/">Google</a></li>
+<li><a href="http://www.yahoo.co.jp/">Yahoo!</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">float-funcs</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<p><a href="MenuBar.html" title="MenuBar">MenuBar</a></p>
+<h3 id="content_1_0">float 演算関数の検討  <a class="anchor" id="l9e044d4" name="l9e044d4"></a></h3>
+<p>SR-プロセッサに fpu を搭載したが，newlib/math の初等関数を用いると実行時間がかなり大きい。マウスのコントロールなどの用途では精度をある程度犠牲にしても高速な演算をしたいことがある。<br />
+そこで、いくつかの関数を独自に検討、実装し、精度と速度の兼ね合いを取れるようにした。<br />
+具体的には 平方根、三角関数、指数関数、対数関数を実装した。libm の関数名とかぶらないように、例えば sqrtf() --&gt; fsqrt() のように fで始まる関数名とした。<br />
+また、簡単のため値域のチェックなど一切行っていない。</p>
+
+<h4 id="content_1_1">平方根 fsqrt(x)  <a class="anchor" id="o723d3ba" name="o723d3ba"></a></h4>
+<ul class="list1" ><li>アルゴリズム<br />
+平方根はニュートン法で求めるが，平方根をそのままニュートン法の漸化式にすると除算が必要となる。そのため逆数平方根  <span class='notranslate'><span class='mathjax-eq ' style=''>\(  \frac{1}{\sqrt(x)}  \)</span></span> をニュートン法で求めたのちに  <span class='notranslate'><span class='mathjax-eq ' style=''>\(  \sqrt{x} = x \frac{1}{\sqrt{x}} \)</span></span> とする。<br />
+また、ニュートン法の場合，初期値が真値に近いほど少ない繰り返しで精度が上がるため、初期値の求め方を工夫する。</li></ul>
+<ul class="list1" ><li>漸化式
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\[ f(x) = \frac{1}{x^2} - a, 　　 f(x) = 0 　の根は　 \frac{1}{\sqrt{a}}\\ ニュートン法の漸化式：\\ x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}\\ x_{n+1} = \frac{1}{2} x_n ( 3 - {a}{x_n}^2) \]</div></div></li>
+<li>初期値<br />
+ieee754 の 32bit float のバイナリ表現をうまく利用して、整数演算で <span class='notranslate'><span class='mathjax-eq ' style=''>\( \frac{1}{\sqrt{a}} \)</span></span> の近似値を求める。</li></ul>
+<ul class="list1" ><li>code
+<pre>
+typedef union {float f; unsigned u;} fu_t;
+
+float invsqrt(float a)
+{
+   unsigned ix = (0xbe800000 - ((fu_t)a).u) &gt;&gt; 1;
+   float x = ((fu_t)ix).f;
+
+   // Xn+1 = Xn * (3 - A * Xn^2) / 2
+   x = x * (3.0f - a * x * x) / 2;
+   x = x * (3.0f - a * x * x) / 2;
+   x = x * (3.0f - a * x * x) / 2;
+   return x;
+}
+
+float fsqrt(float x)
+{
+   return x * invsqrt(x);
+}</pre></li></ul>
+
+<h4 id="content_1_2">三角関数 fsin(x) fcos(x) fsincos(x)  <a class="anchor" id="tb8ff564" name="tb8ff564"></a></h4>
+<ul class="list1" ><li>アルゴリズム</li></ul>
+<ol class="list1" ><li>周期関数なので、<span class='notranslate'><span class='mathjax-eq ' style=''>\( -\pi \le x \lt \pi \)</span></span> の範囲の計算を行う
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\[  n = \lfloor \frac{2 x}{\pi} \rfloor\\  b = x - \frac{n \pi}{2}　　　　　  \small{0 \le b \lt \frac{\pi}{2}}\\  \cos{x} = \sin{(x + \frac{\pi}{2})}　　\sin{(-x)} = -\sin{x}\\   を利用して、\sin{b}, \cos{b} から -\pi \le x \lt \pi の範囲に \]</div></div></li>
+<li><span class='notranslate'><span class='mathjax-eq ' style=''>\( \sin{b}, \cos{b} \)</span></span> を Maclaurin 展開で近似<br />
+少ない項数で近似誤差を最小にするような係数の補正を行った。
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\[  \sin{b} = b - \frac{b^3}{3!} + \frac{b^5}{5!} - \frac{b^7}{7!} + \cdots\\  \cos{b} = 1 - \frac{b^2}{2!} + \frac{b^4}{4!} - \frac{b^6}{6!} + \cdots\\ \]</div></div></li></ol>
+<ul class="list1" ><li>code
+<pre>#define Cs1 (float)(1.0/(2*3) - 38e-6)
+#define Cs2 (float)(1.0/(2*3*4*5) - 180e-6)
+
+#define Cc1 (float)(1.0/(2) + 4e-6)
+#define Cc2 (float)(1.0/(2*3*4) + 15e-6)
+#define Cc3 (float)(1.0/(2*3*4*5*6))
+
+void fsincos(float x, float *s, float *c)
+{
+       int sgn = x &lt; 0.0f;
+       x = sgn ? -x : x;
+       int ix = ((int)(x * (float)(4/M_PI)) + 1) &gt;&gt; 1;
+       x -= ix * (float)(M_PI/2);
+       float xx = x*x;
+       float ss, cc;
+       ss = x * (1.0f - xx * (Cs1 - xx * Cs2));
+       cc = (1.0f - xx * (Cc1 - xx * (Cc2 - xx * Cc3)));
+
+       if(sgn){
+        switch(ix &amp; 0x3){
+        case 0: *s = -ss; *c = cc;  break;
+        case 1: *s = -cc; *c = -ss; break;
+        case 2: *s = ss;  *c = -cc; break;
+        case 3: *s = cc;  *c = ss;  break;
+        }
+       }else{
+        switch(ix &amp; 0x3){
+        case 0: *s = ss;  *c = cc;  break;
+        case 1: *s = cc;  *c = -ss; break;
+        case 2: *s = -ss; *c = -cc; break;
+        case 3: *s = -cc; *c = ss;  break;
+        }
+       }
+}
+float fsin(float x)
+{
+       int sgn = x &lt; 0.0f ? -1 : 1;
+       x *= sgn;
+       int ix = ((int)(x * (float)(4/M_PI)) + 1) &gt;&gt; 1;
+       x -= ix * (float)(M_PI/2);
+       float xx = x*x;
+       sgn = (ix &amp; 0x2) ? -sgn : sgn;
+       switch(ix &amp; 0x1){
+        case 0: return (x * (1.0f - xx * (Cs1 - xx * Cs2)))*sgn;
+        case 1: return (1.0f - xx * (Cc1 - xx * (Cc2 - xx * Cc3)))*sgn;
+       }
+}
+float fcos(float x)
+{
+       x = x &lt; 0.0f ? -x : x;
+       int ix = ((int)(x * (float)(4/M_PI)) + 1) &gt;&gt; 1;
+       x -= ix * (float)(M_PI/2);
+       float xx = x*x;
+       switch(ix &amp; 0x3){
+        case 0: return (1.0f - xx * (Cc1 - xx * (Cc2 - xx * Cc3)));
+        case 1: return -(x * (1.0f - xx * (Cs1 - xx * Cs2)));
+        case 2: return -(1.0f - xx * (Cc1 - xx * (Cc2 - xx * Cc3)));
+        case 3: return (x * (1.0f - xx * (Cs1 - xx * Cs2)));
+       }
+}
+</pre></li></ul>
+
+<h4 id="content_1_3">指数関数 fexp(x)  <a class="anchor" id="b6dc62a0" name="b6dc62a0"></a></h4>
+<ul class="list1" ><li>アルゴリズム</li></ul>
+<ol class="list1" ><li>算法変換<br />
+<span class='notranslate'><span class='mathjax-eq ' style=''>\( \mathrm{e}^{x} \)</span></span> を２のべき乗と<span class='notranslate'><span class='mathjax-eq ' style=''>\( \pm \frac{1}{2}\log{2} \)</span></span> の範囲の指数関数<span class='notranslate'><span class='mathjax-eq ' style=''>\( \mathrm{e}^{b} \)</span></span> の積に変換する。
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\[  \mathrm{e}^{x} = 2^n \mathrm{e}^{b}　　　　　　  \small{-\frac{1}{2}\log{2} \le b \le \frac{1}{2}\log{2}}\\  n = \lfloor \frac{x}{\log{2}} \rfloor\\  b = x \bmod \log{2} \]</div></div></li>
+<li><span class='notranslate'><span class='mathjax-eq ' style=''>\( \mathrm{e}^{b} \)</span></span> を Maclaurin 展開で計算する。
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\[ \mathrm{e}^{x} = 1 + \frac{x}{1!} + \frac{x^2}{2!} + \cdots + \frac{x^n}{n!} + \cdots \]</div></div></li>
+<li><span class='notranslate'><span class='mathjax-eq ' style=''>\( 2^n \mathrm{e}^{b} \)</span></span> を計算</li></ol>
+<ul class="list1" ><li>code
+<pre>#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+typedef union {float f; unsigned u;} fu_t;
+#define LN2     ((float)M_LN2)
+#define INVLN2  ((float)(1.0/M_LN2))
+
+float fexp(float x)
+{
+   float a, b, expb;
+   int n;
+   //const float cf5[] = {9.9999985252e-01,4.9999200435e-01,1.6667133594e-01,4.1890954711e-02,8.3186421629e-03,};
+   const float cf6[] = {1.0000000000e+00,4.9999996902e-01,1.6666648685e-01,4.1669474588e-02,8.3571913396e-03,1.3624404424e-03,};
+   //                         1            1/2!                1/3!              1/4!           1/5!            1/6!
+   // range reduction   -0.5ln2 &lt; b &lt; 0.5ln2
+   a = x * INVLN2 + (x &lt; 0.0f ? -0.5f : 0.5f);
+   n = (int)a;
+   b = x - n * LN2;
+
+// calc exp(b) by Maclaurin (+ coeff adjust)
+//    expb = 1.0f+b*(cf5[0]+b*(cf5[1]+b*(cf5[2]+b*(cf5[3]+b*(cf5[4])))));
+   expb = 1.0f+b*(cf6[0]+b*(cf6[1]+b*(cf6[2]+b*(cf6[3]+b*(cf6[4]+b*(cf6[5]))))));
+
+   // exp(x) = 2^n * exp(b)   add n to ieee754 exponent direct
+   unsigned iy = (((fu_t)expb).u + (n &lt;&lt; 23)) &amp; 0x7fffffff;    // multiply 2^n 
+   return ((fu_t)iy).f;
+}</pre></li></ul>
+
+<h4 id="content_1_4">対数関数 flog(x)  <a class="anchor" id="zf73006e" name="zf73006e"></a></h4>
+<ul class="list1" ><li>アルゴリズム</li></ul>
+<ol class="list1" ><li>算法変換
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\[ a = 2^n (1+f)　　　　　\small{0 \le f \lt 1}\\ \log{a} = \log_2{2^n} \log{2} + \log{(1+f)}\\         = n \log{2} + \log{(1+f)} \]</div></div>
+<span class='notranslate'><span class='mathjax-eq ' style=''>\( n \)</span></span> 及び <span class='notranslate'><span class='mathjax-eq ' style=''>\( 1+f \)</span></span> は ieee754 のバイナリ表現から整数演算で直接得ることが出来る。<br />
+　</li>
+<li><span class='notranslate'><span class='mathjax-eq ' style=''>\( \log{(1+f)} \)</span></span> をMaclaurin展開で計算する。 <span class='notranslate'><span class='mathjax-eq ' style=''>\( f \)</span></span> の範囲は <span class='notranslate'><span class='mathjax-eq ' style=''>\( \small{0 \le f \lt 1} \)</span></span><br />
+収束の高速化のため、変数変換(除算が一回必要)。<br />
+少ない項数で誤差を最小にするよう、非線形最適化で係数を補正した。
+<div class='notranslate'><div class='mathjax-eq img_margin' style=''>\[ x = 1 + f\\ y = \frac{(x-1)}{(x+1)}\\ \frac{\log{x}}{2} = y + \frac{y^3}{3} + \cdots + \frac{y^{2n-1}}{2n-1} + \cdots \]</div></div></li>
+<li><span class='notranslate'><span class='mathjax-eq ' style=''>\( \log{a} = n \log{2} + \log{(1+f)} \)</span></span> を計算</li></ol>
+<ul class="list1" ><li>code
+<pre>#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+typedef union {float f; unsigned u;} fu_t;
+
+#define LN2     ((float)M_LN2)
+
+float flog(float a)
+{
+   int n = (int)( (((fu_t)a).u &lt;&lt; 1) - 0x7f000000 ) &gt;&gt; 24;
+     // get ieee754 8bit exponent (2^n)
+   unsigned ix = (((fu_t)a).u &amp; 0x7fffff) | 0x3f800000; 
+     // get 23bit fraction (1+frac)
+   float x = ((fu_t)ix).f;
+   float y = (x - 1.0f) / (x + 1.0f);  // 除算1回
+   float f, yy = y * y;
+
+   const float cf5[] = {2.0000000764e+00,6.6665553119e-01,4.0044387116e-01,2.7786767296e-01,2.8657712787e-01,};
+// const float cf6[] = {2.0000000000e+00,6.6666561224e-01,4.0004315684e-01,2.8480352473e-01,2.3043217603e-01,1.7447693180e-01,};
+
+   f = y *(cf5[0] + yy*(cf5[1] + yy*(cf5[2] + yy*(cf5[3] + yy*cf5[4]))));
+     // ほぼfloat 限界
+// f = y *(cf6[0] + yy*(cf6[1] + yy*(cf6[2] + yy*(cf6[3] + yy*(cf6[4] + yy*cf6[5])))));
+     // float 限界
+   return n * LN2 + f;
+}</pre></li></ul>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+
+
+
+
+
+
+
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">トップ</a></h3>
+
+<h3 id="content_3_2"><a href="gcc2D-porting.html" title="gcc-porting">gcc-porting</a></h3>
+
+<h3 id="content_3_3"><a href="cam2D-mouse.html" title="cam-mouse">カメラマウス仮想設計</a></h3>
+
+<h3 id="content_3_4"><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7 走行制御</a></h3>
+
+<h3 id="content_3_5" class="focus"><a href="./" title="float-funcs">float演算関数</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="blog.html" title="blog">blog</a></h3>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の9件</h5><div><strong>2019-06-15</strong>
+<ul class="recent_list">
+ <li><a href="blog.html" title="blog">blog</a></li>
+</ul>
+<strong>2018-10-20</strong>
+<ul class="recent_list">
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2016-12-28</strong>
+<ul class="recent_list">
+ <li>float-funcs</li>
+</ul>
+<strong>2016-09-17</strong>
+<ul class="recent_list">
+ <li><a href="gcc2D-porting.html" title="gcc-porting">gcc-porting</a></li>
+</ul>
+<strong>2014-03-23</strong>
+<ul class="recent_list">
+ <li><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7_runctrl</a></li>
+</ul>
+<strong>2012-11-26</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse.html" title="cam-mouse">cam-mouse</a></li>
+</ul>
+<strong>2012-08-18</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse3.html" title="cam-mouse3">cam-mouse3</a></li>
+</ul>
+<strong>2012-04-15</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse2.html" title="cam-mouse2">cam-mouse2</a></li>
+</ul>
+<strong>2011-09-27</strong>
+<ul class="recent_list">
+ <li><a href="sr2D-cpu.html" title="sr-cpu">sr-cpu</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2021 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

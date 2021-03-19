@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>mm8-motor - Camera mouse mm-6 / 7 / 8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1482806308">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+    <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?mm8-motor">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1482806308" alt="Camera mouse mm-6 / 7 / 8" title="Camera mouse mm-6 / 7 / 8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="About_Me.html" title="About_Me">プロファイル</a></li>
+<li><a href="Links.html" title="Links">Links</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">mm8-motor</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<p><a href="mm2D-82D-outline.html" title="mm-8-outline">mm-8-outline</a></p>
+<h2 id="content_1_0">モーターを作る  <a class="anchor" id="bd4c2254" name="bd4c2254"></a></h2>
+<p>2015年のmm-8 で用いたモーターは、HobbyKing で入手した AD-C5 です。<br />
+<a href="http://www.hobbyking.com/hobbyking/store/__7025__AD_C5_Micro_Motor_4_6g_Weight_3700Kv.html">link→AD-C5 モーター＠HobbyKing</a><br />
+RC飛行機やドローン向けのアウトランナー３相ブラシレスモーターです。<br />
+このモーターは、高速回転で高トルクを得ることが目的なので，そもそもマウスの駆動輪にダイレクトドライブで用いるのには向いていません。特に大きなコギングトルクがあり、これが問題です。<br />
+FPGAで３相正弦波駆動回路を作り，コギングを抑えるために大きな駆動電流を流しましたが，走行中に時々コギングに負けてスリップが起こりました。これを無理やりジャイロで補正しようとしてサーボをかけたのですが，安定走行に至りませんでした。</p>
+<p>そこで 2016年の大会に向けて、コギングの少ないモーターを目指して一から製作することにしました。<br />
+私は今年2月に定年を迎えましたが、定年のお祝いとして会社の有志の方々から小型CNCマシン <a href="http://www.originalmind.co.jp/products/kitmill_qt">KitMill-Qt100</a> を贈っていただきましたので、これを活用して金属部品を切削加工することにしました。</p>
+
+<h3 id="content_1_1">コギング対策  <a class="anchor" id="f182a834" name="f182a834"></a></h3>
+<div class="img_margin_left" style="float:left"><img src="refimg/AD-C5-image.jpeg" alt="AD-C5" title="AD-C5" width="392" height="203"  /></div>
+
+<p>AD-C5 の構造は，ローター１２極、ステーター９極の３相モーターです。写真を見てわかるように、ステーターの磁極間のギャップが大きくなっています。コギングの大きな要因です。<br />
+<br /></p>
+<div class="clear"></div>
+<div class="img_margin_left" style="float:left"><img src="refimg/MM8motor-image.jpeg" alt="mm8-motor" title="mm8-motor" width="393" height="205"  /></div>
+
+<p>製作したモーターでは、ステーター磁極間のギャップを小さくし，さらにギャップを軸に対して傾ける(Skewを付ける)ことでローターの回転に伴う磁気抵抗変化を小さくしました。これで、コギングはだいぶ軽減されました。</p>
+<div class="clear"></div>
+<p>巻線は，各極 0.12Φのポリウレタン線を25ターンづつ巻いて、スター結線にしています。白い部分は巻線とステーターコアのショートを防止する絶縁シートです。製作途中に何度かショートで失敗し，このような形になりました。</p>
+
+<h3 id="content_1_2">設計環境  <a class="anchor" id="q7b4436f" name="q7b4436f"></a></h3>
+<div class="img_margin_right" style="float:right"><img src="refimg/motor-assy-v26-2.png" alt="mm8-motor 図面" title="mm8-motor 図面" width="244" height="242"  /></div>
+
+<p>モーターのパーツは Autodesk の3D-CAD <a href="http://www.autodesk.co.jp/products/fusion-360/overview">Fusion360</a> で作図および CAM出力を行い、<a href="http://www.originalmind.co.jp/products/kitmill_qt">KitMill-Qt100</a>で切り出しました。</p>
+<p>Fusion360 は学生、趣味ユーザー、スタートアップは無償でフル機能を使える高機能な3D-CADです。CNCのツールパスを生成するCAM機能まで付いています。設計データはクラウドに保存され共有できるので、チームで設計するのに便利そうです。<br />
+また、ユーザーの声をすぐに反映して頻繁にアップデートを続けている様で，どんどん改良されています。<br />
+<br /></p>
+<div class="clear"></div>
+<div class="img_margin_left" style="float:left"><img src="refimg/mm8-assy-capt.png" alt="mm8-assy 図面" title="mm8-assy 図面" width="350" height="240"  /></div>
+
+<p>私は3D-CADを使うのは初めてですが、チュートリアルビデオが沢山用意されていて，すぐに基本的な使い方ができるようになりました。<br />
+モーターの他に車体のフレームなども設計し、CAD上で組み立てて干渉チェックをしながら部品を作っていくことが出来ました。無償のCADでここまでできるのは素晴らしい。<br />
+今後、より複雑な機構にもチャレンジできそうです。</p>
+<div class="clear"></div>
+
+<h3 id="content_1_3">モーター部品の加工  <a class="anchor" id="m5dee8bf" name="m5dee8bf"></a></h3>
+<p>ステーターのコアとローターの外周に巻きつけるヨークは、古いACアダプターから取り出したトランスのコア（おそらくケイ素鋼板、0.5t）を用いました。<br />
+ローターの回転軸と磁石を取り付けるホイールを兼ねたホルダーは 3tのジュラルミン板から削り出しました。<br />
+ステーターとベアリングの保持部品は10mm角のアルミの角材から切り出しました。<br />
+磁石は，<a href="http://www.magfine.co.jp/user_data/neodymium_square.php">1x2x3mm のネオジム磁石</a>を購入しました。</p>
+<p>三次元部品を３軸のCNCで加工するのは思った以上に難しく，表裏の加工をするための位置決め方法や、材料の保持方法等いろいろな工夫が必要になりました。<br />
+また、材料ごとに切削条件（切削速度、切り込み量、潤滑など）を適切に設定しないと細いエンドミルはすぐに折れてしまいます。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/MM8motor-parts-image.jpeg" alt="mm8-motor" title="mm8-motor" width="382" height="232"  /></div>
+
+<p>CNC で切り出したモーターのパーツと磁石です。</p>
+<p>鋼板を0.5mmのエンドミルで切り出す作業ではなかなかスリルが味わえます。<br />
+切削条件を慎重に決めて，切削油をつけながら加工しましたが、少し条件を攻めた途端に高価な刃物を折ってしまいました。</p>
+<div class="clear"></div>
+
+<h3 id="content_1_4">モーターユニット  <a class="anchor" id="tceff500" name="tceff500"></a></h3>
+<div class="img_margin_left" style="float:left"><img src="refimg/mm8-motor-assy.jpeg" alt="mm8-motor-assy" title="mm8-motor-assy" width="381" height="255"  /></div>
+
+<p>モーターを組み立てたところです。</p>
+<p>アナログ出力のホールセンサーIC <a href="https://sensing.honeywell.com/ss39et-linear-hall-effect-sensor-ics">SS39-ET</a> を2個取り付けて，ローター磁石の磁界を検出し、回転位置センサーにしています。</p>
+<p>この位置センサーを用いてコイルの駆動位相を制御し，DCモーターのような駆動を行いたかったのですが，ローター磁石からの漏れ磁界が思いのほか小さく，十分な精度で回転位置検出ができませんでした。<br />
+このため今回はパルスモーターのようなオープンループ駆動にしています。高速駆動時に脱調する可能性があります。</p>
+
+<div class="clear"></div>
+
+<h3 id="content_1_5">モーター駆動回路  <a class="anchor" id="hd5e62fb" name="hd5e62fb"></a></h3>
+<p>モーターの駆動はFPGAで三相正弦波発生回路を構成し，100kHz のPWMで駆動しています。</p>
+<p>CPUから正弦波の周波数(freq 0.09Hz/LSB)及び振幅(amp 0~100%)を設定します。freq を積分することで位相信号を作り，正弦波テーブルで駆動波形を作っています。</p>
+<div class="img_margin" style="text-align:left"><img src="refimg/mm8-motor-driver.png" alt="mm8-motor-driver" title="mm8-motor-driver" width="600" height="221"  /></div>
+
+<p>ホールセンサーの出力は、AD変換し、CORDIC方式で構成した arctan 回路で1周期分の回転位置に変換します。360°回転ごとに回転方向を積算し、積算位置(position)を作り，CPUから読み出します。</p>
+<div class="img_margin" style="text-align:left"><img src="refimg/mm8-motor-encoder.png" alt="mm8-motor-encoder" title="mm8-motor-encoder" width="537" height="121"  /></div>
+
+<p>ホールセンサーによる位置情報(position)を、三相駆動回路の位相信号(phase)として接続することでブラシレスモーターになるはずですが，ホールセンサーの出力が小さくて位置情報が不安定なため，うまくいきませんでした。</p>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+
+
+
+
+
+
+
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">はじめに</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_2"><a href="mm2D-82D-outline.html" title="mm-8-outline">mm-8a 概要</a></h3>
+
+<h4 id="content_3_3" class="focus"><a href="./" title="mm8-motor">モーターを作る</a></h4>
+
+<h4 id="content_3_4"><a href="mm82D-imgproc.html" title="mm8-imgproc">2016迷路画像</a></h4>
+
+<h4 id="content_3_5"><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">2017迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="mm2D-7a.html" title="mm-7a">mm-7a 概要</a></h3>
+
+<h4 id="content_3_7"><a href="mm7a2D-imgproc.html" title="mm7a-imgproc">2013決勝迷路画像</a></h4>
+
+<h4 id="content_3_8"><a href="mm7a2D-imgproc2.html" title="mm7a-imgproc2">2014迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_9"><a href="mm2D-7.html" title="mm-7">mm-7 概要</a></h3>
+
+<h3 id="content_3_10"><a href="mm72D-system.html" title="mm7-system">ハードウェア</a></h3>
+
+<h4 id="content_3_11"><a href="mm72D-system.html" title="mm7-system">システム構成</a></h4>
+
+<h4 id="content_3_12"><a href="mm72D-pwb.html" title="mm7-pwb">プリント基板</a></h4>
+
+<h3 id="content_3_13"><a href="mm72D-imgproc.html" title="mm7-imgproc">迷路画像解析</a></h3>
+
+<h4 id="content_3_14"><a href="mm72D-imgproc2.html" title="mm7-imgproc2">2012予選迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_15"><a href="E6-A6-82-E8-A6-81-.html" title="概要">mm-6 概要</a></h3>
+
+<h3 id="content_3_16"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a></h3>
+
+<h4 id="content_3_17"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">システム構成</a></h4>
+
+<h4 id="content_3_18"><a href="FPGA.html" title="FPGA">FPGA</a></h4>
+
+<h4 id="content_3_19"><a href="CPU.html" title="CPU">CPU</a></h4>
+
+<h4 id="content_3_20"><a href="E3-82-A4-E3-83-A1-E3-83-BC-E3-82-B8-E3-82-BB-E3-83-B3-E3-82-B5-.html" title="イメージセンサ">イメージセンサ</a></h4>
+
+<h4 id="content_3_21"><a href="E3-83-97-E3-83-AA-E3-83-B3-E3-83-88-E5-9F-BA-E6-9D-BF-.html" title="プリント基板">プリント基板</a></h4>
+
+<h4 id="content_3_22"><a href="E5-AE-9F-E8-A3-85-.html" title="実装">実装</a></h4>
+
+<h3 id="content_3_23"><a href="E3-82-BD-E3-83-95-E3-83-88-E3-82-A6-E3-82-A8-E3-82-A2-.html" title="ソフトウエア">ソフトウエア</a></h3>
+
+<h3 id="content_3_24"><a href="E9-96-8B-E7-99-BA-E7-92-B0-E5-A2-83-.html" title="開発環境">開発環境</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_25"><a href="mm2D-6A2D-outline.html" title="mm-6A-outline">mm-6A</a></h3>
+<hr class="full_hr" />
+
+<h2 id="content_3_26">その他</h2>
+
+<h3 id="content_3_27"><a href="APEC20142D-report.html" title="APEC2014-report">APEC2014-report</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の5件</h5><div><strong>2018-03-11</strong>
+<ul class="recent_list">
+ <li><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">mm8b-imgproc</a></li>
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2017-12-03</strong>
+<ul class="recent_list">
+ <li><a href="About_Me.html" title="About_Me">About_Me</a></li>
+</ul>
+<strong>2017-06-28</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-imgproc.html" title="mm8-imgproc">mm8-imgproc</a></li>
+</ul>
+<strong>2017-01-15</strong>
+<ul class="recent_list">
+ <li>mm8-motor</li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2018 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

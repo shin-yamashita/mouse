@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>cam-mouse - Camera mouse mm-6/7/8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1482897214">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+ <script type="text/javascript" src="../js/jquery.js"></script><script type="text/javascript" src="../js/jquery.cookie.js"></script>   <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"enable_toc":true,"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?cam-mouse">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1482897214" alt="Camera mouse mm-6/7/8" title="Camera mouse mm-6/7/8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="http://www.google.com/">Google</a></li>
+<li><a href="http://www.yahoo.co.jp/">Yahoo!</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">cam-mouse</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<div class="qhm-align-right" style="text-align:right"><p><a href="./" title="FrontPage">＜Top　</a><a href="cam2D-mouse2.html" title="cam-mouse2">Next＞</a></p></div>
+<h2 id="content_1_0">カメラマウス仮想設計  <a class="anchor" id="c1f8df85" name="c1f8df85"></a></h2>
+<p>2012/01～<br />
+スタート地点でカメラをリフトアップし、フル迷路を見渡すことを考える。<br />
+LONG号の小峰さんは過去にVGAのCCDカメラで8x8の範囲を解読するマウスを作られた。<br />
+今は、Mega pixel クラスのCMOSセンサーが手に入る。2M画素クラスのカメラを使えばフル迷路を解析できる可能性がある。</p>
+<div class="contents">
+    <nav class="plugin-contents"
+      data-selector="h1,h2,h3,h4"
+      data-target="[&quot;[role=main]&quot;,&quot;#body&quot;,&quot;body&quot;]"
+      data-ignore="no-toc"
+      data-flat="0"
+      data-title=""
+      data-element-title-content="text"
+      data-element-use-title-attr="1"
+      data-element-is-not-descendant-of=".qhm-eyecatch"
+      data-custom-class=""></nav>
+</div>
+<p>　</p>
+
+<h3 id="content_1_1">実画像によるあたり実験  <a class="anchor" id="y0a55910" name="y0a55910"></a></h3>
+<ul class="list1" ><li>大会会場で撮影した迷路の写真を元に、gimpで射影変換を行ってみた。</li></ul>
+<div class="img_margin_left" style="float:left"><img src="refimg/img_0513-orig.jpg" alt="迷路写真" title="迷路写真" width="450" height="207"  /></div>
+
+<p>　<br />
+オリジナル画像は水平2200画素</p>
+<p>最も条件の悪い、迷路最遠区画の奥行き方向は13画素程度である。</p>
+<div class="clear"></div>
+<ul class="list1" ><li>gimpで射影変換して迷路を真上から見た状態に変換してみる。</li></ul>
+<div class="img_margin_left" style="float:left"><img src="refimg/img_0513-invproj.jpg" alt="迷路写真射影" title="迷路写真射影" width="400" height="395"  /></div>
+
+<p>　<br />
+正方形からずれているのはレンズの歪曲収差と思われる。<br />
+人の目で見るとはっきりと壁の弁別が出来るが、画像処理で赤色を抽出して弁別可能だろうか?</p>
+<div class="clear"></div>
+<ul class="list1" ><li>上の画像にgimpのフィルタ（色要素・赤→しきい値）をかけて2値化した。</li></ul>
+<div class="img_margin_left" style="float:left"><img src="refimg/img_0513-invproj-det.jpg" alt="迷路写真射影2値化" title="迷路写真射影2値化" width="400" height="395"  /></div>
+
+<p>　<br />
+赤の色差画像にすることで壁の白黒を排除し、壁の上面だけを抽出できた。</p>
+<p>うまく画像処理出来れば壁の判別が出来そうな感触である。</p>
+<div class="clear"></div>
+<p>　</p>
+
+<h3 id="content_1_2">検討要素  <a class="anchor" id="n422806c" name="n422806c"></a></h3>
+<ul class="list1" ><li>カメラ<br />
+解像度は？レンズ画角は？カメラ高さは?２Mpixelくらいで全迷路解読可能か?
+<ul class="list2" ><li>シミュレーションで画素数・カメラ高さ・画角のあたりをつけ、実写で確認</li>
+<li>入手可能なカメラの探索
+<ul class="list3" ><li>USB Webcam ? Logitech C905m (2Mpix)など、AF、AE、zoom<br />
+USB UVCの扱いが問題　FTDI　vinculum II なら可能か？</li>
+<li>ai-tendo カメラモジュール（OV9655）SXGA(1280x1024)<br />
+画素数不足か？</li>
+<li>Aptina CMOS chip MT9P401 5Mpix 2.2um 2592x1944 対角7.1mm DataSheet有り<br />
+コントローラを作る必要がある。</li>
+<li>レンズは？　<br />
+<a href="http://www.aitendo.co.jp/product/1453">http://www.aitendo.co.jp/product/1453</a><br />
+f=3.6mm f=6mm 有効像円不明(たぶん 1/3&quot; 6mm)</li></ul></li></ul></li></ul>
+<ul class="list1" ><li>画像処理<br />
+撮影した画像を射影変換し、17x17の壁位置にフィッティング、壁有無の判別
+<ul class="list2" ><li>カメラ位置／姿勢から射影変換マトリクスを作る</li>
+<li>画像（R-Y）を加工。射影変換、平滑化、ノイズ除去、2値化</li>
+<li>射影変換パラメータを変換後画像が正方格子上に乗るようにfit<br />
+ロバストなfit手法？<br />
+カメラ高さ必要量：最遠点の分解能</li></ul></li>
+<li>カメラリフトアップ／収納機構
+<ul class="list2" ><li>収納時サイズが小さく（前後／幅100mm程度以下？）軽く</li>
+<li>伸長時高さ（300mm程度？）←→ 安定性</li></ul></li></ul>
+<ul class="list1" ><li>迷路キャプチャ後最短走行制御
+<ul class="list2" ><li>走行用壁センサー<br />
+収納位置にあるカメラで可能か？<br />
+別センサー（フォトセンサー）を設けるか？</li></ul></li></ul>
+<p>検討要素は多く、山は高いがまずは机上で出来る画像処理の検討を始めてみよう。<br />
+　</p>
+
+<h3 id="content_1_3">カメラシミュレーション(準備) <a class="anchor" id="sd3b8dbd" name="sd3b8dbd"></a></h3>
+<p>カメラで迷路を撮影した画像を作り、その画像を射影変換して迷路を復元する一連の座標変換の定式化を行う。</p>
+
+<h4 id="content_1_4">カメラモデル  <a class="anchor" id="q37c8c28" name="q37c8c28"></a></h4>
+<p>下図のように座標をとる。</p>
+<div class="img_margin_left" style="float:left;z-index:2;"><img src="refimg/camera-model.png" alt="カメラモデル" title="カメラモデル"/></div>
+<ul class="list1" ><li>x,y,z 座標のx,y平面に迷路を置く。迷路上面を z=0 とする。</li>
+<li>迷路のスタート地点（座標 xc,yc,zc）にカメラを置く。</li>
+<li>カメラは仰角Φ、方位角θの方向に向け、画角αの範囲を撮像する。</li>
+<li>カメラ座標 u,v,w の視線方向を w 軸とし、u,v 平面に迷路を見下ろした像を射影する。</li></ul>
+<p>仰角Φは z軸に平行に下を見る方向を基準とし、x,y平面に平行な方向に向けて回転する方向を正の角度とする。<br />
+方位角θはx軸方向を基準とし、上から見て反時計回りを正とする。</p>
+<div class="clear"></div>
+<p>図１　迷路座標とカメラ座標の関係</p>
+
+<h4 id="content_1_5">カメラで撮影した画像を求める座標変換  <a class="anchor" id="q81969b6" name="q81969b6"></a></h4>
+<p>x,y,z 座標に置いた迷路をカメラ座標 u,v,w に変換する。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/proj-matrix.gif" alt="射影変換" title="射影変換" width="364" height="85"  /></div>
+
+<p>　<br />
+　<br />
+・・・式１</p>
+<div class="clear"></div>
+<p>x,y,z 座標をカメラ位置 xc,yc,zc に平行移動し Φ、θ の回転行列を掛けて u,v,w 座標に変換する。<br />
+カメラ座標に変換した迷路画像を u,v 平面に射影する。<br />
+　　u'=u/w<br />
+　　v'=v/w<br />
+カメラで撮影された画像が u',v' である。u',v' の撮像範囲は w で正規化されており、水平画角をαとすると、u' の範囲は ±tan(α/2) となる。</p>
+<div class="img_margin_left" style="float:left;z-index:2;"><img src="refimg/proj-camera-image.gif" alt="カメラ画像" title="カメラ画像"/></div>
+<p>　<br />
+　<br />
+　<br />
+　<br />
+Φ=75°,θ=45°,α=40°,zc=250mm<br />
+の撮影画像シミュレーション</p>
+<div class="clear"></div>
+<p>図２　カメラ画像シミュレーション、ベクタ画像</p>
+
+<h4 id="content_1_6">カメラ画像から迷路画像を復元する  <a class="anchor" id="jf2173cb" name="jf2173cb"></a></h4>
+<p>カメラで撮影された u',v' 画像は大きく歪んでおり、これを射影変換により元の x,y 座標上の正方画像に復元する。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/inv-proj-matrix.gif" alt="射影逆変換" title="射影逆変換" width="355" height="182"  /></div>
+
+<p>　<br />
+　<br />
+・・・式２<br />
+　<br />
+　<br />
+　<br />
+　<br />
+・・・式３</p>
+<div class="clear"></div>
+<p>カメラ画像を求める変換行列の逆行列を用いて逆変換を行う。この変換行列は直交行列なので、逆行列は行列の転置になる。逆変換の後、x',y'平面に射影する。x',y'は正規化されており、カメラ高さzcを掛けて元のサイズに戻し、さらにカメラのx,y位置(xc,yc)の平行移動を行う。<br />
+　　x&quot;=-zc*x'/z'+xc<br />
+　　y&quot;=-zc*y'/z'+yc</p>
+<div class="img_margin_left" style="float:left;z-index:2;"><img src="refimg/inv-proj-image.gif" alt="復元した迷路画像" title="復元した迷路画像"/></div>
+<p>　<br />
+　<br />
+上のカメラ画像から復元した迷路画像<br />
+黒線はカメラの視野範囲</p>
+<p>画角40°ではスタート地点近傍の壁が視野外であり、カメラ高さなどを変えて複数回撮影する必要がある。<br />
+より広い画角にすると、最遠点の壁を分解するのが難しくなる。</p>
+<div class="clear"></div>
+<p>図３　カメラ画像から復元した迷路画像</p>
+
+<h3 id="content_1_7">カメラシミュレーション(画像シミュレーション)  <a class="anchor" id="m27212a9" name="m27212a9"></a></h3>
+<p>実カメラの画素数を想定した画像シミュレーションを行い、カメラ高さや必要な画素数を見積もる。</p>
+
+<h4 id="content_1_8">センサーとレンズの想定  <a class="anchor" id="r70793e9" name="r70793e9"></a></h4>
+<p>想定センサー<br />
+　Aptina CMOS MT9P401 5Mpix 2.2um 2592x1944 対角7.1mm<br />
+想定レンズ<br />
+　<a href="http://www.aitendo.co.jp/product/1453">http://www.aitendo.co.jp/product/1453</a> f=6mm 有効像円6mm(たぶん)</p>
+<div class="img_margin_left" style="float:left;z-index:2;"><img src="refimg/image-circle.gif" alt="センサー像円" title="センサー像円"/></div>
+<p>　<br />
+　<br />
+　</p>
+<p>想定センサー／レンズで水平画角40°、水平2000画素程度の画像が得られる</p>
+<div class="clear"></div>
+<p>図４　センサーとレンズ撮像範囲の想定</p>
+
+<h4 id="content_1_9">想定カメラでの撮影シミュレーション画像作成  <a class="anchor" id="w6b3394f" name="w6b3394f"></a></h4>
+<p>x,y平面上に迷路パターンを置き、式１によってu',v'平面に射影変換し、2000x1500画素のビットマップ画像を作成した。迷路上面の赤いラインのみの画像である。赤いラインの形状を矩形ではなく、半値幅が12mmのコサイン2乗応答としてエリアシングを軽減した。</p>
+<div class="img_margin_left" style="float:left;z-index:2;"><img src="refimg/svmaze_78_45_250_2011f.jpg" alt="撮像シミュレーション" title="撮像シミュレーション"/></div>
+<p>Φ=75°,θ=45°,α=40°,zc=250mm<br />
+の撮影画像シミュレーション</p>
+<p>最も遠方の１区画の奥行き方向が１０画素程度で撮像される。<br />
+壁上面の幅は1画素に満たない。実センサーでは赤画素のピッチは2倍になるのでさらに厳しくなる。<br />
+レンズの解像度は高くないと思われるので、ボケにより赤いラインの応答が広がり、エリアシングが軽減されるのは期待できるが、赤色の振幅は小さくなって弁別が難しくなる。</p>
+<div class="clear"></div>
+<p>図５　撮像シミュレーションビットマップ画像</p>
+
+<h4 id="content_1_10">シミュレーション画像から迷路の復元　  <a class="anchor" id="rc1091a6" name="rc1091a6"></a></h4>
+<p>図５のビットマップ画像を2値化し、射影変換を行って、迷路画像を復元した。<br />
+計算の手順は以下の様になる。</p>
+<ol class="list1" ><li>x,y迷路平面をラスタースキャンし、x,y座標を式１を用いてu',v'カメラ座標に変換する。</li>
+<li>図５の画像から 1.で求めたu',v'の位置の画素値を取り出し、x,yの位置の画素値とする。</li></ol>
+<p>結果として逆変換されたx,y画像が得られる。</p>
+<div class="img_margin_left" style="float:left;z-index:2;"><img src="refimg/inv-proj-image-vmaze.gif" alt="復元画像" title="復元画像"/></div>
+<p>　<br />
+この理想状態のシミュレーション結果ではカメラから最遠点でも充分壁の判別が可能と思われる。</p>
+<p>実カメラではレンズ解像度のなさやセンサーの赤色画素の少なさ、壁の白黒、センサーノイズなどの悪条件が重なるので簡単ではない。</p>
+<p>まずは想定したセンサーで、カメラ高さ250mm(壁面から)を出発点にしよう。</p>
+<div class="clear"></div>
+<p>図６　復元画像</p>
+<div class="qhm-align-right" style="text-align:right"><p><a href="./" title="FrontPage">＜Top　</a><a href="cam2D-mouse2.html" title="cam-mouse2">Next＞</a></p></div>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+
+
+
+
+
+
+
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">トップ</a></h3>
+
+<h3 id="content_3_2"><a href="gcc2D-porting.html" title="gcc-porting">gcc-porting</a></h3>
+
+<h3 id="content_3_3" class="focus"><a href="./" title="cam-mouse">カメラマウス仮想設計</a></h3>
+
+<h3 id="content_3_4"><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7 走行制御</a></h3>
+
+<h3 id="content_3_5"><a href="float2D-funcs.html" title="float-funcs">float演算関数</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="blog.html" title="blog">blog</a></h3>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の9件</h5><div><strong>2019-06-15</strong>
+<ul class="recent_list">
+ <li><a href="blog.html" title="blog">blog</a></li>
+</ul>
+<strong>2018-10-20</strong>
+<ul class="recent_list">
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2016-12-28</strong>
+<ul class="recent_list">
+ <li><a href="float2D-funcs.html" title="float-funcs">float-funcs</a></li>
+</ul>
+<strong>2016-09-17</strong>
+<ul class="recent_list">
+ <li><a href="gcc2D-porting.html" title="gcc-porting">gcc-porting</a></li>
+</ul>
+<strong>2014-03-23</strong>
+<ul class="recent_list">
+ <li><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7_runctrl</a></li>
+</ul>
+<strong>2012-11-26</strong>
+<ul class="recent_list">
+ <li>cam-mouse</li>
+</ul>
+<strong>2012-08-18</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse3.html" title="cam-mouse3">cam-mouse3</a></li>
+</ul>
+<strong>2012-04-15</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse2.html" title="cam-mouse2">cam-mouse2</a></li>
+</ul>
+<strong>2011-09-27</strong>
+<ul class="recent_list">
+ <li><a href="sr2D-cpu.html" title="sr-cpu">sr-cpu</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2018 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

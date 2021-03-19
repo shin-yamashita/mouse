@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>mm7-imgproc - Camera mouse mm-6 / 7 / 8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1482806308">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+ <script type="text/javascript" src="../js/jquery.js"></script><script type="text/javascript" src="../js/jquery.cookie.js"></script>   <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"enable_toc":true,"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?mm7-imgproc">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1482806308" alt="Camera mouse mm-6 / 7 / 8" title="Camera mouse mm-6 / 7 / 8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="About_Me.html" title="About_Me">プロファイル</a></li>
+<li><a href="Links.html" title="Links">Links</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">mm7-imgproc</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<div class="qhm-align-right" style="text-align:right"><p><a href="mm72D-pwb.html" title="mm7-pwb">＜Prev mm-7プリント基板</a> 　 <a href="mm72D-imgproc2.html" title="mm7-imgproc2">Next 予選迷路画像＞</a></p></div>
+<h2 id="content_1_0">迷路画像解析  <a class="anchor" id="x024b8b5" name="x024b8b5"></a></h2>
+<p>カメラで撮影した画像から全迷路を解析する可能性を見るため、シミュレーション検討を行い、カメラ部の仕様を検討しました。以下、検討の過程を紹介します。</p>
+<div class="contents">
+    <nav class="plugin-contents"
+      data-selector="h1,h2,h3,h4"
+      data-target="[&quot;[role=main]&quot;,&quot;#body&quot;,&quot;body&quot;]"
+      data-ignore="no-toc"
+      data-flat="0"
+      data-title=""
+      data-element-title-content="text"
+      data-element-use-title-attr="1"
+      data-element-is-not-descendant-of=".qhm-eyecatch"
+      data-custom-class=""></nav>
+</div>
+
+<h3 id="content_1_1">予備検討  <a class="anchor" id="ed10a6f3" name="ed10a6f3"></a></h3>
+<p>初めに大会会場で撮った迷路の写真を加工することで、あたり検討をした。</p>
+
+<h4 id="content_1_2">実画像による予備実験  <a class="anchor" id="y0a55910" name="y0a55910"></a></h4>
+<ul class="list1" ><li>大会会場で撮影した迷路の写真を元に、gimpで射影変換を行ってみた。</li></ul>
+<div class="img_margin_left" style="float:left"><img src="refimg/img_0513-orig.jpg" alt="迷路写真" title="迷路写真" width="405" height="186"  /></div>
+
+<p>　<br />
+オリジナル画像は水平2200画素、６Mpixelのデジカメで撮影した。</p>
+<p>最も条件の悪い、迷路最遠区画の奥行き方向は13画素程度である。</p>
+<div class="clear"></div>
+<ul class="list1" ><li>gimpで射影変換して迷路を真上から見た状態に変換してみる。</li></ul>
+<div class="img_margin_left" style="float:left"><img src="refimg/img_0513-invproj.jpg" alt="迷路写真射影" title="迷路写真射影" width="320" height="316"  /></div>
+
+<p>　<br />
+正方形からずれているのはレンズの歪曲収差と思われる。<br />
+人の目で見るとはっきりと壁の弁別が出来るが、画像処理で赤色を抽出して弁別可能だろうか?</p>
+<div class="clear"></div>
+<ul class="list1" ><li>上の画像にgimpのフィルタ（色要素・赤→しきい値）をかけて2値化した。</li></ul>
+<div class="img_margin_left" style="float:left"><img src="refimg/img_0513-invproj-det.jpg" alt="迷路写真射影2値化" title="迷路写真射影2値化" width="320" height="316"  /></div>
+
+<p>　<br />
+赤の色差画像にすることで壁の白黒を排除し、壁の上面だけを抽出できた。</p>
+<div class="clear"></div>
+<p>うまく画像処理出来れば壁の判別が出来そうな感触が得られた。カメラの画素数は２M画素程度で良さそうである。</p>
+<p>　</p>
+
+<h4 id="content_1_3">検討要素  <a class="anchor" id="n422806c" name="n422806c"></a></h4>
+<p>６Mpixelのデジカメで撮った画像から全迷路解析が出来そうな感触が得られた。マイクロマウスの形にするにはいろいろな要素を検討する必要がある。<br />
+検討要素を挙げてみた。</p>
+<ol class="list1" ><li>カメラ
+<ul class="list2" ><li>解像度,レンズ画角,カメラ高さ<br />
+シミュレーションで画素数・カメラ高さ・画角のあたりをつけ、実写で確認</li>
+<li>入手可能なカメラの探索
+<ul class="list3" ><li>USB Webcam ? Logitech C905m (2Mpix)など、AF、AE、zoom付で画質はよさそうだが USB UVCの扱いが問題(FTDI　vinculum II なら可能か？)</li>
+<li>ai-tendo カメラモジュール（OV9655）SXGA(1280x1024)画素数不足か？</li>
+<li>Aptina CMOS chip MT9P401 5Mpix 2.2um 2592x1944 対角7.1mm DataSheet有り。コントローラを作る必要がある。</li>
+<li>レンズ<br />
+<a href="http://www.aitendo.com/product/1453">http://www.aitendo.com/product/1453</a><br />
+f=3.6mm f=6mm 有効像円不明(たぶん 1/3&quot; 6mm)</li></ul></li></ul></li>
+<li>画像処理
+<ul class="list2" ><li>撮影した画像を逆射影変換し、17x17の壁位置にフィッティング、壁有無の判別を行うアルゴリズム
+<ul class="list3" ><li>カメラ位置／姿勢から射影変換マトリクスを作る</li>
+<li>カメラ画像を加工。色差変換、射影変換、平滑化、ノイズ除去、etc</li>
+<li>射影変換パラメータを変換後画像が正方格子上に乗るようにfit</li></ul></li></ul></li>
+<li>カメラのリフトアップ機構
+<ul class="list2" ><li>必要な高さに持ち上げ、収納するための軽量で安定な機構</li></ul></li></ol>
+<p>今回の画像処理の基礎である射影変換の検討から着手した。</p>
+
+<h3 id="content_1_4">カメラシミュレーション(準備) <a class="anchor" id="sd3b8dbd" name="sd3b8dbd"></a></h3>
+<p>カメラで迷路を撮影した画像を逆射影変換して迷路を復元する、一連の座標変換の定式化を行う。</p>
+
+<h4 id="content_1_5">カメラモデル  <a class="anchor" id="q37c8c28" name="q37c8c28"></a></h4>
+<p>迷路を俯瞰して撮影するカメラのモデルを作る。<br />
+下図のように座標をとる。</p>
+<div class="ie5" ><table class="style_table" cellspacing="1" border="0"><tbody><tr><td class="style_td"><a href="refimg/camera-model.png" title="camera model"><img src="refimg/camera-model.png" alt="camera model" title="camera model" width="336" height="311"  /></a><br class="spacer" />図１　迷路座標とカメラ座標の関係 <br class="spacer" /></td><td class="style_td">-{x,y,z} 座標の{x,y}平面に迷路を置く。迷路上面を z=0 とする。<br class="spacer" />-迷路のスタート地点（座標 xc,yc,zc）にカメラを置く。<br class="spacer" />-カメラは仰角Φ、方位角θの方向に向け、画角αの範囲を撮像する。<br class="spacer" />-カメラ座標 {u,v,w} の視線方向を w 軸とし、{u,v} 平面に迷路を見下ろした像を射影する。<br class="spacer" /><br class="spacer" />仰角Φは z軸に平行に下を見る方向を基準とし、{x,y}平面に平行な方向に向けて回転する方向を正の角度とする。<br class="spacer" />方位角θはx軸方向を基準とし、上から見て反時計回りを正とする。<br class="spacer" /></td></tr></tbody></table></div>
+
+<h4 id="content_1_6">カメラで撮影した画像を求める座標変換  <a class="anchor" id="q81969b6" name="q81969b6"></a></h4>
+<p>{x,y,z} 座標に置いた迷路をカメラ座標 {u,v,w} に変換する。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/proj-matrix.gif" alt="projective transform" title="projective transform" width="364" height="85"  /></div>
+
+<p>　<br />
+　<br />
+・・・式１</p>
+<div class="clear"></div>
+<p>{x,y,z} 座標をカメラ位置 {xc,yc,zc} に平行移動し Φ、θ の回転行列を掛けて {u,v,w} 座標に変換する。<br />
+カメラ座標に変換した迷路画像を {u,v} 平面に射影する。</p>
+<div class="img_margin" style="text-align:left"><img src="refimg/proj-conv.png" alt="projection conversion" title="projection conversion" width="100" height="79"  /></div>
+
+<p>カメラで撮影された画像が {u',v'} である。{u',v'} の撮像範囲は w で正規化されており、水平画角をαとすると、u' の範囲は ±tan(α/2) となる。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/proj-camera-image.gif" alt="simulated camera image" title="simulated camera image" width="363" height="255"  /></div>
+
+<p>　<br />
+　<br />
+　<br />
+Φ=75°,θ=45°,α=40°,zc=250mm<br />
+の撮影画像シミュレーション</p>
+<div class="clear"></div>
+<p>図２、　カメラ画像シミュレーション、ベクタ画像</p>
+
+<h4 id="content_1_7">撮影画像から迷路画像を復元する  <a class="anchor" id="jf2173cb" name="jf2173cb"></a></h4>
+<p>カメラで撮影された {u',v'} 画像は大きく歪んでおり、これを逆射影変換により元の {x,y} 座標上の正方画像に復元する。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/inv-proj-matrix.gif" alt="inverse projective transform" title="inverse projective transform" width="355" height="182"  /></div>
+
+<p>　<br />
+　<br />
+・・・式２<br />
+　<br />
+　<br />
+　<br />
+　<br />
+・・・式３</p>
+<div class="clear"></div>
+<p>カメラ画像を求める変換行列の逆行列を用いて逆変換を行う。この変換行列は直交行列なので、逆行列は行列の転置になる。逆変換の後、{x',y'}平面に射影する。{x',y'}は正規化されており、カメラ高さzcを掛けて元のサイズに戻し、さらにカメラの{x,y}位置{xc,yc}の平行移動を行う。</p>
+<div class="img_margin" style="text-align:left"><img src="refimg/inv-proj-conv.png" alt="inverse projection conversion" title="inverse projection conversion" width="177" height="82"  /></div>
+
+<div class="img_margin_left" style="float:left"><img src="refimg/inv-proj-image.gif" alt="inverse projective transformed image" title="inverse projective transformed image" width="348" height="345"  /></div>
+
+<p>　<br />
+上のカメラ画像(図２)から復元した迷路画像<br />
+黒線はカメラの視野範囲</p>
+<p>画角40°ではスタート地点近傍の壁が視野外であり、カメラ高さなどを変えて複数回撮影する必要がある。<br />
+より広い画角にすると、最遠点の壁を分解するのが難しくなる。</p>
+<div class="clear"></div>
+<p>図３、　カメラ画像から復元した迷路画像</p>
+
+<h3 id="content_1_8">カメラシミュレーション(画像シミュレーション)  <a class="anchor" id="m27212a9" name="m27212a9"></a></h3>
+<p>ベクタ画像を用いて射影変換の確認を行った。次に、実カメラの画素数を想定したラスタ画像でシミュレーションを行い、カメラ高さや必要な画素数を見積もる。</p>
+
+<h4 id="content_1_9">センサーとレンズの想定  <a class="anchor" id="r70793e9" name="r70793e9"></a></h4>
+<p>入手可能で、当たり検討で用いた画像に近い画像が得られそうなセンサーとして以下のセンサーを想定した。</p>
+<ul class="list1" ><li>想定センサー<br />
+Aptina CMOS MT9P401 5Mpix 2592x1944 対角7.1mm</li>
+<li>想定レンズ<br />
+<a href="http://www.aitendo.co.jp/product/1453">http://www.aitendo.co.jp/product/1453</a> f=6mm 有効像円6mmくらい</li></ul>
+<div class="img_margin_left" style="float:left"><img src="refimg/image-circle.gif" alt="sensor image size" title="sensor image size" width="321" height="261"  /></div>
+
+<p>　<br />
+　<br />
+　</p>
+<p>想定センサー／レンズで水平画角40°、水平2000画素程度の画像が得られる</p>
+<div class="clear"></div>
+<p>図４、　センサーとレンズ撮像範囲の想定</p>
+
+<h4 id="content_1_10">想定カメラでの撮影シミュレーション画像作成  <a class="anchor" id="w6b3394f" name="w6b3394f"></a></h4>
+<p>x,y平面上に迷路パターンを置き、式１によってu',v'平面に射影変換し、2000x1500画素のビットマップ画像を作成した。迷路上面の赤いラインのみの画像である。赤いラインの形状を矩形ではなく、半値幅が12mmのコサイン2乗応答としてエリアシングを軽減した。</p>
+<div class="ie5" ><table class="style_table" cellspacing="1" border="0"><tbody><tr><td class="style_td"><img src="refimg/svmaze_78_45_250_2011f.jpg" alt="simulated camera image" title="simulated camera image" width="400" height="300"  />図５　撮像シミュレーションビットマップ画像</td><td class="style_td">Φ=75°,θ=45°,α=40°,zc=250mm <br class="spacer" />最も遠方の１区画の奥行き方向が１０画素程度で撮像される。<br class="spacer" />壁上面の幅は1画素に満たない。実センサーでは赤画素のピッチは2倍になるのでさらに厳しくなる。<br class="spacer" />レンズの解像度は高くないと思われるので、ボケにより赤いラインの応答が広がり、エリアシングが軽減されるのは期待できるが、赤色の振幅は小さくなって弁別が難しくなる。</td></tr></tbody></table></div>
+
+<h4 id="content_1_11">シミュレーション画像から迷路の復元　  <a class="anchor" id="rc1091a6" name="rc1091a6"></a></h4>
+<p>図５のビットマップ画像を2値化し、逆射影変換を行って、迷路画像を復元した。<br />
+計算の手順は以下の様になる。</p>
+<ol class="list1" ><li>x,y迷路平面をラスタースキャンし、x,y座標を式１を用いてu',v'カメラ座標に変換する。</li>
+<li>図５の画像から 1.で求めたu',v'の位置の画素値を取り出し、x,yの位置の画素値とする。</li></ol>
+<p>結果として逆変換されたx,y画像が得られる。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/inv-proj-image-vmaze.gif" alt="inverse projection image" title="inverse projection image" width="342" height="343"  /></div>
+
+<p>　<br />
+この理想状態のシミュレーション結果ではカメラから最遠点でも充分壁の判別が可能と思われる。</p>
+<p>実カメラではレンズ解像度のなさやセンサーの赤色画素の少なさ、壁の白黒、センサーノイズなどの悪条件が重なるので簡単ではない。</p>
+<div class="clear"></div>
+<p>図６　復元画像</p>
+<p>実カメラでの画像劣化に不安はあるものの、まずは想定したセンサーで、カメラ高さ250mm(壁面から)を出発点にしよう。</p>
+<hr class="full_hr" />
+
+<h3 id="content_1_12">実画像による迷路復元の検討  <a class="anchor" id="ga1cca3f" name="ga1cca3f"></a></h3>
+<p>前項で理想状態の迷路画像復元を行ったが、実際のカメラでは視線方向やカメラ位置、画角の精度はそれほど期待できない。特に仰角の誤差に対する復元画像の位置誤差は大きく、想定した設定で仰角0.2°の誤差が迷路1区画の位置誤差になる。<br />
+このため復元画像が迷路区画にフィットするように、射影変換パラメータを調整する必要がある。</p>
+
+<h4 id="content_1_13">縮小モデル迷路による画像撮影  <a class="anchor" id="b555e063" name="b555e063"></a></h4>
+<p>実際のカメラの画像で検討するために、1/3サイズのモデル迷路を作り、デジタルカメラで撮影した。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/modelmaze-45.JPG" alt="model-maze picture" title="model-maze picture" width="363" height="272"  /></div>
+
+<p>モデル迷路はスチレンボードに紙を貼り、その上に赤いテープを貼ったものである。<br />
+カメラは前ページの画像シミュレーションに合わせ、Φ=75°,θ=45°,α=40°,zc=250mm に近づけるように設定した。<br />
+zcは迷路の縮尺1/3に合わせて 250/3mm に設置した。</p>
+<p>取得した画像サイズは 2272x1704 である。</p>
+<div class="clear"></div>
+<p>図７　モデル迷路撮影画像</p>
+
+<h4 id="content_1_14">モデル迷路画像からの迷路復元  <a class="anchor" id="d61d042c" name="d61d042c"></a></h4>
+<p>上のカメラ画像(図７)を赤の色差画像にして2値化し、逆射影変換を行って、迷路画像を復元した。実画像では、カメラの回転と、レンズ歪曲歪みの補正が必要になった。</p>
+<div class="img_margin_left" style="float:left"><img src="refimg/camera-adjust.png" alt="camera correction parameter" title="camera correction parameter" width="468" height="171"  /></div>
+
+<div class="clear"></div>
+<p>図８　カメラ補正パラメータ</p>
+<div class="ie5" ><table class="style_table" cellspacing="1" border="0"><tbody><tr><td class="style_td"><img src="refimg/modelmaze-45-invproj.jpg" alt="inverse projection image" title="inverse projection image" width="342" height="342"  /><br class="spacer" />図９、　図７モデル迷路画像からの復元画像</td><td class="style_td">前ページで定義した Φ、θ、α、xc、yc、zc を手作業で微調整した。<br class="spacer" />これらのパラメータに加え、カメラの光軸まわりの回転 ρ、レンズの歪曲歪み d も調整しないと合わせ込めない。微調整した結果は以下である。<br class="spacer" />Φ=76.3°、θ=45.7°、α=37°、zc=250mm、xc=13.5mm、yc=11.0mm、ρ=0.7°、d=3% <br class="spacer" /><br class="spacer" />歪曲歪み d は水平画像サイズ±１に正規化された画像の像高rに対し、r'=r*(1-d*r) に歪んだ画像が撮影されたものというモデルにした。<br class="spacer" /><br class="spacer" />画像がうねっているが、モデル迷路の平面がわずかにうねっているためと思われる。</td></tr></tbody></table></div>
+<p>これを自動でフィッティングし、壁の有無を判定するアルゴリズムを開発する必要がある。</p>
+
+<h3 id="content_1_15">迷路復元画像からの壁情報検出  <a class="anchor" id="aad65cb3" name="aad65cb3"></a></h3>
+<p>モデル迷路画像から手動でカメラパラメータのフィッティングを行ってみたが、これを自動化することを検討する。当初、復元画像を正方格子にフィットすることを考えたが、極めて難しく、断念した。<br />
+ここで、学生時代の友人が壁情報検出のアルゴリズムを検討してくれることになり、モデル迷路画像からほぼ正しく壁を検出できるところまで作り上げてくれた。<br />
+基本的に復元画像の壁の交点を逐次探索していくアルゴリズムであり、画像の歪みに格子点をフィットしていく方式である。<br />
+ただ、友人の検討環境は NI社のLabViewグラフィック言語であり、また計算量の大きなところもあって、そのままではマウスに移植できない。C言語に移植しつつ非力なCPUでも実用的な時間で解析が終わるくらいのアルゴリズムに落とし込む必要があった。<br />
+以下、友人のアイデアを元に、mm-7に実装した壁情報検出のアルゴリズムを紹介する。</p>
+
+<h4 id="content_1_16">壁情報検出アルゴリズム  <a class="anchor" id="q394979a" name="q394979a"></a></h4>
+<div class="img_margin_right" style="float:right"><img src="refimg/mm7-mazean.png" alt="maze analyze algo" title="maze analyze algo" width="346" height="332"  /></div>
+
+<ul class="list1" ><li>カメラ位置パラメータ(Φ,θ,ρ...)初期値で撮影画像を逆射影変換する。
+<ul class="list2" ><li>この段階ではカメラ位置誤差のため迷路の壁位置が正方格子からずれている。</li>
+<li>カメラの近傍の誤差は小さく、カメラからの距離にしたがって誤差が拡大する。</li></ul></li>
+<li>カメラ近傍から外に向けて壁の交点をサーチする。
+<ul class="list2" ><li>壁と壁の交点の位置を含むウィンドウ(peg pos search window)を逐次移動し、ウィンドウ内に交点を含むとき交点の座標誤差を記録していく。</li>
+<li>交点が見つからない時は、既に記録された交点座標から補間する。また、隣接する交点の座標誤差が連続性を保つ様に平滑化処理を行う。</li></ul></li>
+<li>迷路の８x８くらいまで交点位置をサーチした段階で、交点の座標誤差情報を元にカメラ位置パラメータΦ,θ,ρを修正し、再度撮影画像を逆射影変換する。
+<ul class="list2" ><li>この操作で逆射影変換画像の交点位置精度が上がる。特にΦはカメラから遠方の位置に対して感度が高く、迷路最外周付近の検出確度が上がる。</li>
+<li>再びカメラ近傍から外に向けて壁の交点をサーチし、交点の座標位置を確定する。</li></ul></li></ul>
+<div class="clear"></div>
+<div class="img_margin_right" style="float:right"><img src="refimg/mm7-mazedet.png" alt="wall detect algo" title="wall detect algo" width="251" height="256"  /></div>
+
+<ul class="list1" ><li>確定した交点座標の周辺の画像から壁の有無を検出する。
+<ul class="list2" ><li>交点座標を中心に、右図のように９つの領域を設定し、各領域内の色差画像の画素平均値、ピークを計算する。床面(B)のレベルを基準にしてN,E,W,S各領域の画素平均値を比較し、壁の有無を判断する。</li>
+<li>交点を順次サーチしていくと、N,E,W,S各領域は2度評価されることになるが、判断がわかれた場合、各領域の平均値を元に求めた信頼性評価値を比較して有力な方を採用する。</li></ul></li></ul>
+<div class="clear"></div>
+<ul class="list1" ><li>6回に分けて撮影した画像に対してそれぞれ上記のような処理を行って、壁の有無を判断していく。
+<ul class="list2" ><li>画像がオーバーラップしている部分については、信頼性評価値を比較して有力な方を採用する。</li></ul></li></ul>
+<div class="qhm-align-right" style="text-align:right"><p><a href="mm72D-pwb.html" title="mm7-pwb">＜Prev mm-7プリント基板</a> 　 <a href="mm72D-imgproc2.html" title="mm7-imgproc2">Next 予選迷路画像＞</a></p></div>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+
+
+
+
+
+
+
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">はじめに</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_2"><a href="mm2D-82D-outline.html" title="mm-8-outline">mm-8a 概要</a></h3>
+
+<h4 id="content_3_3"><a href="mm82D-motor.html" title="mm8-motor">モーターを作る</a></h4>
+
+<h4 id="content_3_4"><a href="mm82D-imgproc.html" title="mm8-imgproc">2016迷路画像</a></h4>
+
+<h4 id="content_3_5"><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">2017迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="mm2D-7a.html" title="mm-7a">mm-7a 概要</a></h3>
+
+<h4 id="content_3_7"><a href="mm7a2D-imgproc.html" title="mm7a-imgproc">2013決勝迷路画像</a></h4>
+
+<h4 id="content_3_8"><a href="mm7a2D-imgproc2.html" title="mm7a-imgproc2">2014迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_9"><a href="mm2D-7.html" title="mm-7">mm-7 概要</a></h3>
+
+<h3 id="content_3_10"><a href="mm72D-system.html" title="mm7-system">ハードウェア</a></h3>
+
+<h4 id="content_3_11"><a href="mm72D-system.html" title="mm7-system">システム構成</a></h4>
+
+<h4 id="content_3_12"><a href="mm72D-pwb.html" title="mm7-pwb">プリント基板</a></h4>
+
+<h3 id="content_3_13" class="focus"><a href="./" title="mm7-imgproc">迷路画像解析</a></h3>
+
+<h4 id="content_3_14"><a href="mm72D-imgproc2.html" title="mm7-imgproc2">2012予選迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_15"><a href="E6-A6-82-E8-A6-81-.html" title="概要">mm-6 概要</a></h3>
+
+<h3 id="content_3_16"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a></h3>
+
+<h4 id="content_3_17"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">システム構成</a></h4>
+
+<h4 id="content_3_18"><a href="FPGA.html" title="FPGA">FPGA</a></h4>
+
+<h4 id="content_3_19"><a href="CPU.html" title="CPU">CPU</a></h4>
+
+<h4 id="content_3_20"><a href="E3-82-A4-E3-83-A1-E3-83-BC-E3-82-B8-E3-82-BB-E3-83-B3-E3-82-B5-.html" title="イメージセンサ">イメージセンサ</a></h4>
+
+<h4 id="content_3_21"><a href="E3-83-97-E3-83-AA-E3-83-B3-E3-83-88-E5-9F-BA-E6-9D-BF-.html" title="プリント基板">プリント基板</a></h4>
+
+<h4 id="content_3_22"><a href="E5-AE-9F-E8-A3-85-.html" title="実装">実装</a></h4>
+
+<h3 id="content_3_23"><a href="E3-82-BD-E3-83-95-E3-83-88-E3-82-A6-E3-82-A8-E3-82-A2-.html" title="ソフトウエア">ソフトウエア</a></h3>
+
+<h3 id="content_3_24"><a href="E9-96-8B-E7-99-BA-E7-92-B0-E5-A2-83-.html" title="開発環境">開発環境</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_25"><a href="mm2D-6A2D-outline.html" title="mm-6A-outline">mm-6A</a></h3>
+<hr class="full_hr" />
+
+<h2 id="content_3_26">その他</h2>
+
+<h3 id="content_3_27"><a href="APEC20142D-report.html" title="APEC2014-report">APEC2014-report</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の5件</h5><div><strong>2018-03-11</strong>
+<ul class="recent_list">
+ <li><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">mm8b-imgproc</a></li>
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2017-12-03</strong>
+<ul class="recent_list">
+ <li><a href="About_Me.html" title="About_Me">About_Me</a></li>
+</ul>
+<strong>2017-06-28</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-imgproc.html" title="mm8-imgproc">mm8-imgproc</a></li>
+</ul>
+<strong>2017-01-15</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-motor.html" title="mm8-motor">mm8-motor</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2021 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>FPGA - Camera mouse mm-6 / 7 / 8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1482806308">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+    <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?FPGA">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1482806308" alt="Camera mouse mm-6 / 7 / 8" title="Camera mouse mm-6 / 7 / 8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="About_Me.html" title="About_Me">プロファイル</a></li>
+<li><a href="Links.html" title="Links">Links</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">FPGA</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<div class="qhm-align-right" style="text-align:right"><p><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">＜Prev</a>  <a href="CPU.html" title="CPU">Next＞</a></p></div>
+<h2 id="content_1_0">mm-6/<!--autolink--><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a><!--/autolink-->  <a class="anchor" id="kc461edb" name="kc461edb"></a></h2>
+
+<h3 id="content_1_1">FPGA  <a class="anchor" id="v8fbd6e8" name="v8fbd6e8"></a></h3>
+<p>ブロック図 :　　FPGA の内部構成です</p>
+<img src="refimg/fpga-block-dia.png" alt="FPGAブロック図" title="FPGAブロック図" width="641" height="366" />
+
+<h3 id="content_1_2">２CPU  <a class="anchor" id="p9c01b5d" name="p9c01b5d"></a></h3>
+<p>FPGAの中に CPU0/master CPU1/slave の2つのCPUを組み込んでいます。slaveで画像処理を行うことで、masterの負荷を軽減します。</p>
+<ul class="list1" ><li>CPU0/master<br />
+走行制御、迷路解析、外部記憶(SDカード)、デバッグ通信</li>
+<li>CPU1/slave<br />
+イメージ センサの画像処理</li></ul>
+
+<h4 id="content_1_3">CPU0/master  <a class="anchor" id="zb2ec917" name="zb2ec917"></a></h4>
+<ul class="list1" ><li>外部記憶(SDカード)
+<ul class="list2" ><li>micro-SDカードを外部記憶として用い、FAT16ファイルシステムを使用する</li>
+<li>メインメモリ(32kB RAM)にはモニタプログラムが入れてあり、デバッグターミナルからの操作や基板上のスイッチ操作でSDカード上のプログラムファイルをメインメモリ及びSDRAMにロードして実行する</li>
+<li>走行中のログデータは一旦SDRAMに記録しておき、走行終了後にSDRAMから読み出してファイルに書き込む</li>
+<li>走行中にイメージ センサで撮影した画像はSDRAMに記録されており、これをファイルに書き込むこともできる</li></ul></li>
+<li>走行制御
+<ul class="list2" ><li>１msのタイマー割り込み処理でメカのサーボ処理を行う</li>
+<li>PWMでモータードライバを駆動</li>
+<li>ロータリーエンコーダ回路で走行距離とタイヤの回転数を計測</li>
+<li>ADCでステアリングの角度(pot)と車体の角速度(Gyro)を計測</li></ul></li></ul>
+
+<h4 id="content_1_4">CPU1/slave  <a class="anchor" id="v8353522" name="v8353522"></a></h4>
+<ul class="list1" ><li>イメージ センサの画像処理
+<ul class="list2" ><li>画像データはImage sensor I/F から line memoryに書き込まれ、これを処理して距離情報を得る</li>
+<li>センサのフレーム単位に画像処理を開始し、得られた距離情報を shared memory を介してmasterに送る</li>
+<li>距離情報の取得完了をmasterへ割り込みで通知する</li></ul></li>
+<li>masterからの起動方法
+<ul class="list2" ><li>電源投入時、slaveはリセット状態になっている</li>
+<li>slaveのプログラム／データRAMはmasterのアドレス空間にも配置されており、masterからコードをロード</li>
+<li>masterがslaveのリセットを解除して起動</li></ul></li></ul>
+
+<h3 id="content_1_5">SDRAMコントローラ  <a class="anchor" id="scbf1559" name="scbf1559"></a></h3>
+<ul class="list1" ><li>PC-133対応 256Mbit(32MB x8)のSDRAMを96MHzで使用</li>
+<li>SDRAMコントローラは64Byte単位でバーストアクセス</li>
+<li>arbiterでイメージ センサの画像データ書き込み、ビデオ出力用の画像データ読み出し、master CPUのキャッシュ読み書き、の要求を調停する</li>
+<li>1kBのキャッシュメモリ経由でmaster CPUから読み書き出来る</li></ul>
+<p>SDRAMの96MHz動作は簡単ではなく、FPGAの論理合成時にSDRAMピンの信号タイミングを揃える必要があります。注意深く合成ツールのタイミング制約をおこないます。<br />
+SDRAMのクロックのタイミングは合成ツールでうまくコントロールできず、タイミング切り替え可能な回路にして調整しました。自宅の60MHz帯域のオシロスコープでは、96MHzの信号波形を見るのに不十分で、手探りになりました。</p>
+
+<h3 id="content_1_6">アナログ入力  <a class="anchor" id="zde18fb0" name="zde18fb0"></a></h3>
+<p>FPGAにはADコンバータは内蔵されていません。<br />
+アナログ値をディジタルに変換するのに、FPGAのLVDS差動レシーバを利用した回路を工夫してみました。</p>
+<p>AD変換回路</p>
+<img src="refimg/adc-block-dia.png" alt="AD変換回路" title="AD変換回路" width="641" height="216" />
+<p>LVDS差動レシーバをアナログのコンパレータとして用い、レシーバの＋入力にアナログ信号を加え、-入力にはFPGAからのロジック出力信号にRCローパスフィルタをかけてフィードバックします。<br />
+レシーバの出力をディジタル積分し、積分結果を2値化したものがフィードバック出力です。積分は30/4MHzクロックで演算しています。<br />
+この2値信号をMAF(移動平均ローパスフィルタ)で平滑し、1.8kHzでダウンサンプルした結果が11ビットのAD変換結果になります。<br />
+デルタシグマAD変換器もどきです。</p>
+<p>正しい使い方ではないのですが、今回の用途には問題なく使えています。</p>
+<p><br /></p>
+<hr class="full_hr" />
+<div class="qhm-align-right" style="text-align:right"><p><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">＜Prev</a>  <a href="CPU.html" title="CPU">Next＞</a></p></div>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+
+
+
+
+
+
+
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">はじめに</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_2"><a href="mm2D-82D-outline.html" title="mm-8-outline">mm-8a 概要</a></h3>
+
+<h4 id="content_3_3"><a href="mm82D-motor.html" title="mm8-motor">モーターを作る</a></h4>
+
+<h4 id="content_3_4"><a href="mm82D-imgproc.html" title="mm8-imgproc">2016迷路画像</a></h4>
+
+<h4 id="content_3_5"><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">2017迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="mm2D-7a.html" title="mm-7a">mm-7a 概要</a></h3>
+
+<h4 id="content_3_7"><a href="mm7a2D-imgproc.html" title="mm7a-imgproc">2013決勝迷路画像</a></h4>
+
+<h4 id="content_3_8"><a href="mm7a2D-imgproc2.html" title="mm7a-imgproc2">2014迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_9"><a href="mm2D-7.html" title="mm-7">mm-7 概要</a></h3>
+
+<h3 id="content_3_10"><a href="mm72D-system.html" title="mm7-system">ハードウェア</a></h3>
+
+<h4 id="content_3_11"><a href="mm72D-system.html" title="mm7-system">システム構成</a></h4>
+
+<h4 id="content_3_12"><a href="mm72D-pwb.html" title="mm7-pwb">プリント基板</a></h4>
+
+<h3 id="content_3_13"><a href="mm72D-imgproc.html" title="mm7-imgproc">迷路画像解析</a></h3>
+
+<h4 id="content_3_14"><a href="mm72D-imgproc2.html" title="mm7-imgproc2">2012予選迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_15"><a href="E6-A6-82-E8-A6-81-.html" title="概要">mm-6 概要</a></h3>
+
+<h3 id="content_3_16"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a></h3>
+
+<h4 id="content_3_17"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">システム構成</a></h4>
+
+<h4 id="content_3_18" class="focus"><a href="./" title="FPGA">FPGA</a></h4>
+
+<h4 id="content_3_19"><a href="CPU.html" title="CPU">CPU</a></h4>
+
+<h4 id="content_3_20"><a href="E3-82-A4-E3-83-A1-E3-83-BC-E3-82-B8-E3-82-BB-E3-83-B3-E3-82-B5-.html" title="イメージセンサ">イメージセンサ</a></h4>
+
+<h4 id="content_3_21"><a href="E3-83-97-E3-83-AA-E3-83-B3-E3-83-88-E5-9F-BA-E6-9D-BF-.html" title="プリント基板">プリント基板</a></h4>
+
+<h4 id="content_3_22"><a href="E5-AE-9F-E8-A3-85-.html" title="実装">実装</a></h4>
+
+<h3 id="content_3_23"><a href="E3-82-BD-E3-83-95-E3-83-88-E3-82-A6-E3-82-A8-E3-82-A2-.html" title="ソフトウエア">ソフトウエア</a></h3>
+
+<h3 id="content_3_24"><a href="E9-96-8B-E7-99-BA-E7-92-B0-E5-A2-83-.html" title="開発環境">開発環境</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_25"><a href="mm2D-6A2D-outline.html" title="mm-6A-outline">mm-6A</a></h3>
+<hr class="full_hr" />
+
+<h2 id="content_3_26">その他</h2>
+
+<h3 id="content_3_27"><a href="APEC20142D-report.html" title="APEC2014-report">APEC2014-report</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の5件</h5><div><strong>2018-03-11</strong>
+<ul class="recent_list">
+ <li><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">mm8b-imgproc</a></li>
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2017-12-03</strong>
+<ul class="recent_list">
+ <li><a href="About_Me.html" title="About_Me">About_Me</a></li>
+</ul>
+<strong>2017-06-28</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-imgproc.html" title="mm8-imgproc">mm8-imgproc</a></li>
+</ul>
+<strong>2017-01-15</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-motor.html" title="mm8-motor">mm8-motor</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2021 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

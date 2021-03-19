@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>gcc-porting - Camera mouse mm-6/7/8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1482897214">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+    <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?gcc-porting">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1482897214" alt="Camera mouse mm-6/7/8" title="Camera mouse mm-6/7/8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="http://www.google.com/">Google</a></li>
+<li><a href="http://www.yahoo.co.jp/">Yahoo!</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">gcc-porting</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<p><a href="./" title="FrontPage">トップ</a></p>
+<h2 id="content_1_0">gcc porting  <a class="anchor" id="vb3bce86" name="vb3bce86"></a></h2>
+
+<h3 id="content_1_1">SR プロセッサ命令セットの gcc への移植  <a class="anchor" id="w6c43c4e" name="w6c43c4e"></a></h3>
+<p>fr30 の移植コードをベースに改造を加える形で新規命令セットを移植した。fr30 は移植コードが小さく、また cgen<a id="notetext_1" href="#notefoot_1" class="note_super" title="cgen : the Cpu t...">*1</a> を使っているのでアセンブラ、リンカの移植コードも小さい。<br />
+ただし、メンテナンスがされていないようで、gdb-6.x 以降 gdb のfr30サポートが無くなっており、gdb-6.7.1 の移植には苦労した。</p>
+
+<h4 id="content_1_2">cgen による binutils, gdb の移植  <a class="anchor" id="z252cbf5" name="z252cbf5"></a></h4>
+<p>cgen のソースを cgen-latest/ に展開し、新しく命令セット定義ファイルを作成する。ベースにしたfr30の定義ファイル fr30.cpu を見ると大体記述の仕方がわかる。<br />
+新たに定義した命令の op-code、動作、アセンブラ記述、のセットを書いていく。</p>
+<ul class="list1" ><li>SR CPU定義ファイル：<br />
+cgen-latest/cgen/cpu/sr.cpu<br />
+cgen-latest/cgen/cpu/sr.opc</li></ul>
+<p>cgen のソースツリーを binutils, gdb のソースツリーにリンクする。configure, Mekefile に新たに target-cpu sr を追加し、それぞれビルドする。<br />
+binutils-2.17/cgen -&gt; ../cgen-latest/cgen<br />
+gdb-6.7.1/cgen -&gt; ../cgen-latest/cgen</p>
+<p>binutils, gdb をビルドする際 --enable-cgen-maint オプションを付けて configure すると、必要な C ソースが自動生成される。</p>
+<ul class="list1" ><li>自動生成されたソース：<br />
+binutils-2.17/opcodes/<br />
+sr-asm.c,sr-desc.c,sr-dis.c,sr-ibld.c,sr-opc.c<br />
+gdb-6.7.1/opcodes/<br />
+sr-asm.c,sr-desc.c,sr-desc.h,sr-dis.c,sr-ibld.c,sr-opc.c,sr-opc.h<br />
+gdb-6.7.1/sim/sr/<br />
+arch.c,arch.h,cpu.c,cpu.h,cpuall.h,decode.c,decode.h,model.c,sem-switch.c,sem.c</li></ul>
+<p>実際には、configure,Mekefile 関連以外にも、target 依存の記述があり、いくつものソースに手を入れる必要があった。</p>
+
+<h4 id="content_1_3">gcc の移植  <a class="anchor" id="yb1faaf6" name="yb1faaf6"></a></h4>
+<p>主に以下の3つのファイルを作成する。<br />
+gcc-3.4.6/gcc/config/sr/sr.c    SR specific functions<br />
+gcc-3.4.6/gcc/config/sr/sr.h    Definitions of SR target<br />
+gcc-3.4.6/gcc/config/sr/sr.md   machine description<br />
+他にいくつか、<br />
+gcc-3.4.6/gcc/config/sr/t-sr<br />
+gcc-3.4.6/gcc/config/sr/crti.asm　初期化ルーチン<br />
+gcc-3.4.6/gcc/config/sr/crtn.asm　<br />
+gcc-3.4.6/gcc/config/sr/sr-protos.h<br />
+参照：<a href="http://www.ist-soft.co.jp/nki6403/GNUGCC.html">GNU コンパイラ集(GCC) の使い方と移植について</a>(文字コードEUC）</p>
+<p>configure,Mekefile 関連、に target sr プロセッサを追加し、ビルド。</p>
+
+<h3 id="content_1_4">SR クロスコンパイラ  <a class="anchor" id="wad0aee0" name="wad0aee0"></a></h3>
+<p>以下は、移植したSRクロスコンパイラのソースと具体的ビルド手順。ビルドはスクリプト化しているので、詳細は各スクリプトを参照。</p>
+<p>開発環境は Linux (Fedora-10)<br />
+使用するツールのバージョンに敏感で、Fedora-10標準のツールに対し、古いバージョンのツールをインストールする必要があった。以下の2点を用意した。</p>
+<ol class="list1" ><li>gcc-3.4.6<br />
+Fedora-10の標準 gcc-4.3.2 でコンパイル出来ない。compat-gcc-34-3.4.6 を「ソフトウェアの追加／削除」で追加し、リンク　/usr/local/bin/gcc -&gt; /usr/bin/gcc34 を張ってコンパイルした。</li>
+<li>guile-1.4.1<br />
+guile は cgen が用いる。Fedora-10の標準 guile-1.6 でエラー。guile-1.4.1.tar.gz を入手し、/usr/local/binにインストールした。</li></ol>
+<p>クロスコンパイラのパッチとビルドスクリプト download：<br />
+<a href="./index.php?plugin=attach&amp;refer=gcc-porting&amp;openfile=xgcc-sr-110130.tar.gz" title="2011/09/27 23:49:09 1534.1KB"><img src="image/file.png" width="20" height="20" alt="file" style="border-width:0px" />xgcc-sr-110130.tar.gz : xgcc-sr patch</a></p>
+<p><a href="./index.php?plugin=attach&amp;refer=gcc-porting&amp;openfile=xgcc-sr-fp-110426.tgz" title="2013/01/07 23:02:47 1742.4KB"><img src="image/file.png" width="20" height="20" alt="file" style="border-width:0px" />xgcc-sr-fp-110426.tgz : xgcc-sr patch fpu version</a></p>
+<p>C で書いた cycle acculate simulator.<br />
+<a href="./index.php?plugin=attach&amp;refer=gcc-porting&amp;openfile=srsim-110426.tgz" title="2013/01/07 23:02:11 1774.7KB"><img src="image/file.png" width="20" height="20" alt="file" style="border-width:0px" />srsim-110426.tgz : c-simulator</a></p>
+<p>SRのVHDLソース：<br />
+<a href="./index.php?plugin=attach&amp;refer=gcc-porting&amp;openfile=sr-core-hdl-110420.tgz" title="2013/01/07 23:01:52 55.0KB"><img src="image/file.png" width="20" height="20" alt="file" style="border-width:0px" />sr-fpu-110420.tgz : sr-core hdl</a></p>
+<p>以下、ビルド手順</p>
+<pre># SR プロセッサクロスコンパイラパッチを展開
+tar xfvz xgcc-sr-110130.tar.gz
+cd xgcc-sr
+
+# GNU ソースの入手
+sh get-sources.sh
+# ./Arch/ にGNUソースアーカイブを持ってくる。必要なソースは以下
+#  binutils-2.17.tar.gz
+#  gcc-core-3.4.6.tar.bz2
+#  gcc-g++-3.4.6.tar.bz2
+#  gdb-6.7.1.tar.bz2
+#  newlib-1.11.0.tar.gz
+#  cgen-20061209.tar.bz2
+(cgen の20061209バージョンは入手出来ないので、xgcc-sr-110130.tar.gz に含めてある)
+
+# ソースの展開、コンパイル準備（リンク張り）、パッチ適用
+sh build-setup.sh &gt; build-setup.log
+
+# binutil-2.17 のビルド・インストール
+sh build-binutil.sh &gt; build-binutil.log
+# gcc-3.4.6 のビルド・インストール
+sh build-gcc.sh &gt; build-gcc.log
+# gdb-6.7.1 のビルド・インストール
+sh build-gdb.sh &gt; build-gdb.log
+
+# テスト
+cd sr_test
+make     　　テストプログラムをクロスコンパイル
+make check　シミュレータで実行、結果をリファレンスと比較</pre>
+
+<h3 id="content_1_5">シミュレーション実行  <a class="anchor" id="t8337e5e" name="t8337e5e"></a></h3>
+<p>gdbに含まれるプログラム bin/sr-elf-run に クロスコンパイルリンクしたabsファイルを与えると、シミュレーション実行できる。-t オプションで命令実行トレースが得られるので、HDLのシミュレーションとの突合せが出来る。</p>
+<p>クロスgdbを target sim で実行し、gcc 移植の不具合追跡、プログラムのバグ追跡を行う。<br />
+gdbのGUIフロントエンド ddd を用いることで、効率的に不具合追跡が行えた。</p>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+<div id="summary"><!-- ■BEGIN id:summary -->
+ <!-- ■BEGIN id:note -->
+ <div id="note">
+   <hr class="note_hr" /><a id="notefoot_1" href="#notetext_1" class="note_super">*1</a>
+<span class="small">cgen : the Cpu tools GENerator アセンブラ、リンカ、シミュレータの移植を容易にする→<a href="http://sourceware.org/cgen/">link</a></span><br />
+ </div>
+ <!-- □END id:note -->
+
+
+
+
+</div><!-- □ END id:summary -->
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">トップ</a></h3>
+
+<h3 id="content_3_2" class="focus"><a href="./" title="gcc-porting">gcc-porting</a></h3>
+
+<h3 id="content_3_3"><a href="cam2D-mouse.html" title="cam-mouse">カメラマウス仮想設計</a></h3>
+
+<h3 id="content_3_4"><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7 走行制御</a></h3>
+
+<h3 id="content_3_5"><a href="float2D-funcs.html" title="float-funcs">float演算関数</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="blog.html" title="blog">blog</a></h3>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の9件</h5><div><strong>2019-06-15</strong>
+<ul class="recent_list">
+ <li><a href="blog.html" title="blog">blog</a></li>
+</ul>
+<strong>2018-10-20</strong>
+<ul class="recent_list">
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2016-12-28</strong>
+<ul class="recent_list">
+ <li><a href="float2D-funcs.html" title="float-funcs">float-funcs</a></li>
+</ul>
+<strong>2016-09-17</strong>
+<ul class="recent_list">
+ <li>gcc-porting</li>
+</ul>
+<strong>2014-03-23</strong>
+<ul class="recent_list">
+ <li><a href="mm2D-7_runctrl.html" title="mm-7_runctrl">mm-7_runctrl</a></li>
+</ul>
+<strong>2012-11-26</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse.html" title="cam-mouse">cam-mouse</a></li>
+</ul>
+<strong>2012-08-18</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse3.html" title="cam-mouse3">cam-mouse3</a></li>
+</ul>
+<strong>2012-04-15</strong>
+<ul class="recent_list">
+ <li><a href="cam2D-mouse2.html" title="cam-mouse2">cam-mouse2</a></li>
+</ul>
+<strong>2011-09-27</strong>
+<ul class="recent_list">
+ <li><a href="sr2D-cpu.html" title="sr-cpu">sr-cpu</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2019 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>

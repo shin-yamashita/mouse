@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>イメージセンサ - Camera mouse mm-6 / 7 / 8</title>
+ <meta name="keywords" content="micromouse、マイクロマウス、製作、FPGA、カメラ" />
+ <meta name="description" content="カメラを搭載したマイクロマウスの紹介" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="./index.php?cmd=rss" />
+ 
+<link rel="stylesheet" media="screen" href="skin/hokukenstyle/g_blue06/main.css?1482806308">
+<link rel="stylesheet" media="print" href="skin/hokukenstyle/g_blue06/main_print.css">
+    <script>
+if (typeof QHM === "undefined") QHM = {};
+QHM = {"window_open":true,"exclude_host_name_regex":"","default_target":"_blank"};
+</script><meta name="GENERATOR" content="Quick Homepage Maker; version=6.0.8; haik=false" />
+<link rel="canonical" href="./index.php?%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%82%BB%E3%83%B3%E3%82%B5">
+<script src="js/qhm.min.js"></script></head>
+<body>
+<!-- ◆ Head copy ◆ =====================================================  -->
+<div id="headcopy" class="qhm-head-copy">
+<h1>カメラ搭載マイクロマウス　Camera mouse mm-6 / 7 / 8</h1>
+</div><!-- END: id:headcopy -->
+<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+<!-- ◆ Header ◆ ========================================================== -->
+<div id="header">
+<div id="logo"><a href="./"><img src="image/qhm_logo.jpg?1482806308" alt="Camera mouse mm-6 / 7 / 8" title="Camera mouse mm-6 / 7 / 8" /></a></div>
+</div>
+<!-- ◆ Navigator ◆ ======================================================= -->
+<div id="navigator">
+	
+<!-- SITENAVIGATOR CONTENTS START -->
+<ul class="list1" ><li><a href="./" title="FrontPage">トップ</a></li>
+<li><a href="About_Me.html" title="About_Me">プロファイル</a></li>
+<li><a href="Links.html" title="Links">Links</a></li></ul>
+
+<!-- SITENAVIGATOR CONTENTS END -->
+</div>
+<!-- ◆ Content ◆ ========================================================= -->
+<div id="main"><!-- ■BEGIN id:main -->
+<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
+<div id="content"><!-- ■BEGIN id:content -->
+<h2 class="title">イメージセンサ</h2>
+<div id="body"><!-- ■BEGIN id:body -->
+
+<!-- BODYCONTENTS START -->
+<div class="qhm-align-right" style="text-align:right"><p><a href="CPU.html" title="CPU">＜Prev</a>  <a href="E3-83-97-E3-83-AA-E3-83-B3-E3-83-88-E5-9F-BA-E6-9D-BF-.html" title="プリント基板">Next＞</a></p></div>
+<h2 id="content_1_0">mm-6/<!--autolink--><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a><!--/autolink-->  <a class="anchor" id="oc6312cf" name="oc6312cf"></a></h2>
+
+<h3 id="content_1_1"><!--autolink-->イメージセンサ<!--/autolink-->  <a class="anchor" id="x6073725" name="x6073725"></a></h3>
+<p>カメラの「目」である<!--autolink-->イメージセンサ<!--/autolink-->には、Aptina社(旧Micron)の MT9T001 というCMOS<!--autolink-->イメージセンサ<!--/autolink-->を用いました。<br />
+このセンサを選んだのは以下の理由によります。</p>
+<ul class="list1" ><li>DigiKey で入手できる</li>
+<li>データシートが入手できる</li>
+<li>ディジタル出力であり、FPGAに直結できる</li>
+<li>高フレームレート読み出しができる</li></ul>
+
+<h4 id="content_1_2">仕様  <a class="anchor" id="qebedb40" name="qebedb40"></a></h4>
+<p>MT9T001 の主な仕様です。</p>
+<div class="ie5" ><table class="style_table" cellspacing="1" border="0"><tbody><tr><td class="style_td"><span style="color:blue;"  class="qhm-deco">Parameter</span></td><td class="style_td"><span style="color:blue;"  class="qhm-deco">Typical Value</span></td></tr><tr><td class="style_td">Optical format</td><td class="style_td">1/2-inch (4:3)</td></tr><tr><td class="style_td">Active pixels</td><td class="style_td">2,048H x 1,536V 3Mpixel</td></tr><tr><td class="style_td">Pixel size</td><td class="style_td">3.2μm x 3.2μm</td></tr><tr><td class="style_td">Color filter array</td><td class="style_td">RGB Bayer pattern</td></tr><tr><td class="style_td">Shutter type</td><td class="style_td">electronic rolling shutter</td></tr><tr><td class="style_td">Maximum data rate/master clock</td><td class="style_td">48 MPS/48 MHz</td></tr><tr><td class="style_td">Frame rate</td><td class="style_td">QXGA(2,048 x 1,536)Programmable up to 12 fps</td></tr><tr><td class="style_td"></td><td class="style_td">VGA (640 x 480) Programmable up to 93 fps</td></tr><tr><td class="style_td">ADC resolution</td><td class="style_td">10-bit, on-chip</td></tr></tbody></table></div>
+
+<h4 id="content_1_3">使い方  <a class="anchor" id="xa03d022" name="xa03d022"></a></h4>
+<p>2048x1536全画素を読み出すと、最大12fps(フレーム毎秒)でマウスの位置検出には遅すぎます。CMOSセンサの特長として、画像の一部を切り出して読むことができ、高速なフレームレートで読む設定が出来ます。<br />
+今回用いたレンズの有効像円が小さかったこともあり、1024x400のエリアを切り出して読み出しています。フレームレートは約70fpsになりました。<br />
+1024x400でもリアルタイムに画像処理するには大きすぎる画素数なので、FPGAの中で4x4画素平均化する処理を行い、256x100画素にして白黒画像としてSDRAMに書き込んでいます。4x4画素平均することで感度も向上します。</p>
+<img src="refimg/image-sensor-cfg.png" alt="画像の説明" title="画像の説明" width="641" height="261" />
+<p>これらの駆動モード設定は、センサーに2線シリアル通信で設定します。</p>
+
+<h4 id="content_1_4">レンズ調整  <a class="anchor" id="p61f47ae" name="p61f47ae"></a></h4>
+<p>センサーにレンズを取り付けてから、フォーカスの調整をする必要があります。センサーの画像を見ながらレンズの位置を調整するために、SDRAMに書き込んだ画像を読み出してNTSCのビデオ信号として出力する回路を設け、テレビに接続して調整しました。<br />
+ビデオ信号はFPGAから3ビットで出力し、抵抗加算でDA変換した簡易的なものですが、充分役に立ちました。</p>
+
+<h4 id="content_1_5">光源フリッカ対策  <a class="anchor" id="o80683d2" name="o80683d2"></a></h4>
+<p>競技会会場の照明はおそらくメタルハライドだと思われますが、フリッカーがあります。電源周波数50Hzの倍の100Hzで輝度が変動していると思われます。<br />
+mm-6 のカメラは70フレーム毎秒で撮影しており、光源のフリッカーとのビート周期が画像信号に現れました。そこで急遽カメラのローリングシャッター設定を変えて、1/100 秒の電子シャッターを入れ、ビートを抑えることにしました。</p>
+<img src="refimg/fv-anim3.gif" alt="フリッカの影響" title="フリッカの影響" width="400" height="100" />
+<p>上の動画は会場で mm-6 のカメラが撮影した画像の垂直方向の波形です。左がビートのある波形、右が1/100シャッターで対策した波形です。(関西では1/120シャッターが必要)</p>
+<p><br /></p>
+<hr class="full_hr" />
+<div class="qhm-align-right" style="text-align:right"><p><a href="CPU.html" title="CPU">＜Prev</a>  <a href="E3-83-97-E3-83-AA-E3-83-B3-E3-83-88-E5-9F-BA-E6-9D-BF-.html" title="プリント基板">Next＞</a></p></div>
+
+<!-- BODYCONTENTS END -->
+</div><!-- □END id:body -->
+<!-- summary start -->
+
+
+
+
+
+
+
+<!-- summary end --></div><!-- □END id:content -->
+</div><!-- □ END id:wrap_content -->
+<!-- ◆sidebar◆ ========================================================== -->
+<div id="wrap_sidebar"><!-- ■BEGIN id:wrap_sidebar -->
+<div id="sidebar">
+<!-- ■BEGIN id:menubar -->
+<div id="menubar" class="bar">
+
+<!-- MENUBAR CONTENTS START -->
+<h2 id="content_3_0">メニュー</h2>
+
+<h3 id="content_3_1"><a href="./" title="FrontPage">はじめに</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_2"><a href="mm2D-82D-outline.html" title="mm-8-outline">mm-8a 概要</a></h3>
+
+<h4 id="content_3_3"><a href="mm82D-motor.html" title="mm8-motor">モーターを作る</a></h4>
+
+<h4 id="content_3_4"><a href="mm82D-imgproc.html" title="mm8-imgproc">2016迷路画像</a></h4>
+
+<h4 id="content_3_5"><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">2017迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_6"><a href="mm2D-7a.html" title="mm-7a">mm-7a 概要</a></h3>
+
+<h4 id="content_3_7"><a href="mm7a2D-imgproc.html" title="mm7a-imgproc">2013決勝迷路画像</a></h4>
+
+<h4 id="content_3_8"><a href="mm7a2D-imgproc2.html" title="mm7a-imgproc2">2014迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_9"><a href="mm2D-7.html" title="mm-7">mm-7 概要</a></h3>
+
+<h3 id="content_3_10"><a href="mm72D-system.html" title="mm7-system">ハードウェア</a></h3>
+
+<h4 id="content_3_11"><a href="mm72D-system.html" title="mm7-system">システム構成</a></h4>
+
+<h4 id="content_3_12"><a href="mm72D-pwb.html" title="mm7-pwb">プリント基板</a></h4>
+
+<h3 id="content_3_13"><a href="mm72D-imgproc.html" title="mm7-imgproc">迷路画像解析</a></h3>
+
+<h4 id="content_3_14"><a href="mm72D-imgproc2.html" title="mm7-imgproc2">2012予選迷路画像</a></h4>
+<hr class="full_hr" />
+
+<h3 id="content_3_15"><a href="E6-A6-82-E8-A6-81-.html" title="概要">mm-6 概要</a></h3>
+
+<h3 id="content_3_16"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">ハードウェア</a></h3>
+
+<h4 id="content_3_17"><a href="E3-83-8F-E3-83-BC-E3-83-89-E3-82-A6-E3-82-A7-E3-82-A2-.html" title="ハードウェア">システム構成</a></h4>
+
+<h4 id="content_3_18"><a href="FPGA.html" title="FPGA">FPGA</a></h4>
+
+<h4 id="content_3_19"><a href="CPU.html" title="CPU">CPU</a></h4>
+
+<h4 id="content_3_20" class="focus"><a href="./" title="イメージセンサ">イメージセンサ</a></h4>
+
+<h4 id="content_3_21"><a href="E3-83-97-E3-83-AA-E3-83-B3-E3-83-88-E5-9F-BA-E6-9D-BF-.html" title="プリント基板">プリント基板</a></h4>
+
+<h4 id="content_3_22"><a href="E5-AE-9F-E8-A3-85-.html" title="実装">実装</a></h4>
+
+<h3 id="content_3_23"><a href="E3-82-BD-E3-83-95-E3-83-88-E3-82-A6-E3-82-A8-E3-82-A2-.html" title="ソフトウエア">ソフトウエア</a></h3>
+
+<h3 id="content_3_24"><a href="E9-96-8B-E7-99-BA-E7-92-B0-E5-A2-83-.html" title="開発環境">開発環境</a></h3>
+<hr class="full_hr" />
+
+<h3 id="content_3_25"><a href="mm2D-6A2D-outline.html" title="mm-6A-outline">mm-6A</a></h3>
+<hr class="full_hr" />
+
+<h2 id="content_3_26">その他</h2>
+
+<h3 id="content_3_27"><a href="APEC20142D-report.html" title="APEC2014-report">APEC2014-report</a></h3>
+<p><br /></p>
+<hr class="full_hr" />
+<div class="qhm-plugin-recent"><h5>最新の5件</h5><div><strong>2018-03-11</strong>
+<ul class="recent_list">
+ <li><a href="mm8b2D-imgproc.html" title="mm8b-imgproc">mm8b-imgproc</a></li>
+ <li><a href="./" title="FrontPage">FrontPage</a></li>
+</ul>
+<strong>2017-12-03</strong>
+<ul class="recent_list">
+ <li><a href="About_Me.html" title="About_Me">About_Me</a></li>
+</ul>
+<strong>2017-06-28</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-imgproc.html" title="mm8-imgproc">mm8-imgproc</a></li>
+</ul>
+<strong>2017-01-15</strong>
+<ul class="recent_list">
+ <li><a href="mm82D-motor.html" title="mm8-motor">mm8-motor</a></li>
+</ul>
+</div></div>
+<hr class="full_hr" />
+
+<!-- MENUBAR CONTENTS END -->
+
+</div>
+<!-- □END id:menubar --></div><!-- □END id:sidebar -->
+</div><!-- □END id:wrap_sidebar -->
+<div id="main_dummy" style="clear:both;"></div>
+</div><!-- □END id:main -->
+<!-- ◆ navigator2 ◆ ========================================================== -->
+<div id="navigator2"><!-- ■BEGIN id:navigator2 -->
+	
+<!-- SITENAVIGATOR2 CONTENTS START -->
+<p><a href="#navigator">↑ページのトップへ</a> / <a href="./" title="FrontPage">トップ</a></p>
+
+<!-- SITENAVIGATOR2 CONTENTS END -->
+</div><!-- □END id:navigator2 -->
+<!-- ◆ Footer ◆ ========================================================== -->
+<div id="footer"><!-- ■BEGIN id:footer -->
+<div id="copyright"><!-- ■BEGIN id:copyright -->
+<p> Copyright &copy; 2021 <a href="./"></a> All Rights Reserved.<br />
+ 東京都，s.yamashita@jcom.zaq.ne.jp</p>
+</div><!-- □END id:copyright -->
+<!-- ◆ Toobar ◆ ========================================================== -->
+</div><!-- □END id:footer -->
+<!-- ◆ END ◆ ============================================================= -->
+</div><!-- □END id:wrapper -->
+<!-- ■　QHM copy right■ ============================================== -->
+<div id="licence">
+<p>powered by <strong><a href="http://www.open-qhm.net/">QHM</a> 6.0.8</strong> haik<br /> based on <a href="http://pukiwiki.sourceforge.jp/">PukiWiki</a> 1.4.7  License is <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. <a href="index.php?cmd=qhmauth">QHM</a> </p><!-- ■　W3C ロゴ■ ============================================== -->
+<p style="text-align:right; margin-top:5px;">
+    <a href="./index.php?cmd=rss&amp;ver=1.0"><img src="image/rss.png" width="36" height="14" alt="最新の更新 RSS" title="最新の更新 RSS" /></a>&nbsp; 
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="image/valid-xhtml10.png"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+</p>
+</div>
+<!-- ■　アクセスタグ■ ============================================== -->
+<script>
+$("#body, [role=main]").fitVids({ignore:""});
+</script></body>
+</html>
