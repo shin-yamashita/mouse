@@ -3,6 +3,6 @@
 
 https://shin-yamashita.github.io/mouse/
 
-[sr-core gcc porting](https://shin-yamashita.github.io/mouse/gcc2D-porting.html)
+[sr-core gcc porting](https://shin-yamashita.github.io/mouse/labs/gcc2D-porting.html)
 
 
