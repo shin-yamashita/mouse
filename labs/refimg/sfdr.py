@@ -16,19 +16,25 @@ def spectra(fc, fs, N, Nb, K2, K3):
   for i in range(N):
     t = i / fs
     s = math.sin(math.pi * 2 * fc * t)
-    s = s**3 * 10 ** -K3 + s**2 * 10**-K2 + s
+    s = -s**3 * 10 ** -K3 - s**2 * 10**-K2 + s
     for b in range(Nb):
         y.append(s)
 
-  fr, Gxx = sig.welch(y, fs=fs*Nb, window='blackman', nperseg=N)
-  return fr, Gxx
+  fr, Gxx = sig.welch(y, fs=fs*Nb, window='blackman', nperseg=N, scaling='spectrum')
+  inl = []
+  for i in range(4096):
+    s = i / 2048 - 1.0
+    sd = -s**3 * 10 ** -K3 - s**2 * 10**-K2 + s
+    inl.append(sd-s)
+  inl = np.array(inl) - ((inl[-1]-inl[0]) * (np.arange(4096)/4096) + inl[0])
+  return fr, Gxx, inl
 
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('SFDR')
         self.create_widgets()
-        self.ax = self.fig.add_subplot(111)
+        #self.ax = self.fig.add_subplots(2,1)
         self.draw_plot()
 
     def create_widgets(self):
@@ -39,7 +45,8 @@ class Application(tk.Tk):
         self.control_frame.pack(side=tk.RIGHT)
 
         # figureの配置
-        self.fig = plt.figure() #figsize=(5, 5))
+        self.fig, self.ax = plt.subplots(2,1)
+        #self.fig = plt.figure() #figsize=(5, 5))
         self.canvas = FigureCanvasTkAgg(self.fig, self.canvas_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -69,12 +76,22 @@ class Application(tk.Tk):
 
     def update_anim(self, dt):
         '''グラフ更新関数'''
-        fr, gxx = spectra(self.fc.get(), 32, 8192, 8, self.k2.get(), self.k3.get())
-        self.ax.clear()
-        self.ax.plot(fr, dB(gxx))
-        self.ax.set_ylim(-100,20)
-        self.ax.set_xlim(0,16)
-        self.ax.grid()
+        fr, gxx, inl = spectra(self.fc.get(), 32, 8192, 8, self.k2.get(), self.k3.get())
+        self.ax[0].clear()
+        self.ax[0].plot(fr, dB(gxx))
+        self.ax[0].set_ylim(-100,0)
+        self.ax[0].set_xlim(0,16)
+        self.ax[0].set_ylabel("spectrum(dB)")
+        self.ax[0].set_xlabel("freq(GHz)")
+        self.ax[0].grid()
+        self.ax[1].clear()
+        self.ax[1].plot(np.arange(4096)-2048, np.array(inl)*2048)
+        self.ax[1].set_ylim(-10,10)
+        self.ax[1].set_xlim(-2048,2048)
+        self.ax[1].set_ylabel("INL(LSB)")
+        self.ax[1].set_xlabel("code")
+        self.ax[1].grid()
+        self.fig.tight_layout()
 
     def draw_plot(self, event=None):
 
