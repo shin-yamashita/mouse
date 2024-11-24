@@ -74,32 +74,57 @@ class Application(tk.Tk):
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.canvas_frame)
         self.toolbar.pack()
         # スライダーの配置
-        self.fc = self.slider("fc", 0.9, 1.0, 16.0, 0.05)
-        self.k3 = self.slider("k3", 3.5, 1.0, 8.0, 0.5)
-        self.k2 = self.slider("k2", 3.5, 1.0, 8.0, 0.5)
-        self.ls = self.slider("ls", 0, -5.0, 5.0, 0.5)
-        self.amp = self.slider("amp", 0, 0.0, -30.0, 0.5)
+        self.fc = self.spin("fc", 0.9, 1.0, 16.0, 0.05)
+        self.k3 = self.spin("k3", 3.5, 1.0, 8.0, 0.5)
+        self.k2 = self.spin("k2", 3.5, 1.0, 8.0, 0.5)
+        self.ls = self.spin("ls", 0, -5.0, 5.0, 0.5)
+        #self.amp = self.slider("amp", 0, 0.0, -30.0, 0.5)
+        self.amp = self.spin("amp", 0, -30, 0.0, 0.5)
+
         self.slice = self.slider("slice", 0, 0, 7, 1)
         self.ms = self.slider("ms", 0, -5, 5, 0.5)
         self.scan = self.button("scan", self.fc_scan)
 
     def button(self, name='k', command=None):
         frm = tk.Frame(self)
-        label = tk.Label(frm, text=name)
-        label.pack(side=tk.LEFT)
-        ks= tk.Button(frm, command=command)
-        ks.pack(side=tk.RIGHT)
+        #label = tk.Label(frm, text=name)
+        #label.pack(side=tk.LEFT, expand = True)
+        ks= tk.Button(frm, command=command, text=name)
+        ks.pack(side=tk.LEFT, expand=True)
         frm.pack()
+
+    def set_and_draw(self, k, val):
+       k.set(val)
+       self.draw_plot()
 
     def slider(self, name='k', init=2, from_=1.0, to=8.0, resolution=0.5):
         frm = tk.Frame(self)
-        label = tk.Label(frm, text=name)
-        label.pack(side=tk.LEFT)
         k = tk.DoubleVar()
+        #label = tk.Label(frm, text=name)
+        label = tk.Button(frm, text=name, command= lambda: self.set_and_draw(k, init), width=4)
+        label.pack(side=tk.LEFT)
+        #label.bind("<Button-1>", self.draw_plot)
         ks= tk.Scale(frm, variable=k, from_=from_, to=to, resolution=resolution, orient=tk.HORIZONTAL, command=self.draw_plot)
         k.set(init)
         ks.pack(side=tk.RIGHT)
         frm.pack()
+        return k
+    
+    def spin(self, name='k', init=2, from_=1.0, to=8.0, resolution=0.5):
+        frm = tk.Frame(self)
+        k = tk.DoubleVar()
+        label = tk.Button(frm, text=name, command= lambda: k.set(init), width=6)
+        #label.pack(side=tk.LEFT, expand = True) #, fill=tk.BOTH)
+        label.grid(row=0, column=0, sticky=tk.W+tk.E)
+        ks= tk.Spinbox(frm, from_=from_, to=to, increment=resolution, textvariable=k, command=self.draw_plot, width=8)
+        k.set(init)
+        ks.bind("<Return>", self.draw_plot )
+        ks.bind("<Button-4>", lambda self: k.set(round((k.get()+resolution)*100)/100))
+        ks.bind("<Button-5>", lambda self: k.set(round((k.get()-resolution)*100)/100))
+        ks.bind("<Button-1>", self.draw_plot)
+        #ks.pack(side=tk.LEFT, expand = True)
+        ks.grid(row=0, column=1, sticky=tk.W+tk.E)
+        frm.pack(anchor=tk.W)
         return k
 
     def calc_wfm(self, fc):
@@ -169,7 +194,7 @@ class Application(tk.Tk):
     def draw_plot(self, *args):
         '''グラフ更新関数'''
         fc = self.fc.get()
-
+        #print("fc: ", fc)
         fr, gxx,inl, y, corr, Gxx, peaks, if1, if2, if3, ifs, msbsl  = self.calc_wfm(fc)
 
         self.ax[0].clear()
